@@ -32,10 +32,5 @@ except (ConnectionFailure, ConfigurationError) as e:
     raise RuntimeError(f"MongoDB connection failed: {e}")
 
 db = client[DB_NAME]
-logger.info(f"Using database: {DB_NAME}")
-
 doctors_collection = db["doctors"]
-logger.info("Doctors collection initialized")
-
 tokens_collection = db["tokens"]
-logger.info("Tokens collection initialized")

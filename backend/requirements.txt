@@ -3,4 +3,3 @@ uvicorn
 pymongo
 python-dotenv
 pydantic[email]
-python-dotenv

@@ -1,9 +1,21 @@
+from typing import Optional
 from utils.security import generate_activation_token, token_expiry
-from db.mongo_client import tokens_collection
+from db.mongo_client import tokens_collection, doctors_collection
 from datetime import datetime, timezone
 
-def get_user_by_email(email: str):
-    pass
+def get_token_by_email(email: str) -> Optional[dict]:
+    token_doc = tokens_collection.find_one(
+        {"email": email},
+        sort=[("created_at", -1)]
+    )
+    if not token_doc:
+        return None
+    return {
+        "email": token_doc["email"],
+        "token": token_doc["token"],
+        "expires_at": token_doc["expires_at"],
+        "created_at": token_doc["created_at"],
+    }
 
 def create_user_activation_token(email: str):
     token = generate_activation_token()
@@ -19,16 +31,35 @@ def create_user_activation_token(email: str):
 
     return token
 
-def get_activation_token(token: str):
-    try:
-        obj = tokens_collection.find_one({"token": token})
-        email, token = obj["email"], obj["token"]
-    except Exception as e:
-        raise RuntimeError(f"Error retrieving token: {e}")
-    return {"email": email, "token": token}
+def get_activation_token(token: str) -> Optional[dict]:
+
+    obj = tokens_collection.find_one({"token": token})
+    if not obj:
+        return None
+    return {
+        "email": obj["email"],
+        "token": obj["token"],
+        "expires_at": obj["expires_at"],
+        "created_at": obj.get("created_at"),
+    }
 
 def activate_user_by_email(email: str):
-    pass
+    """
+    Create and activate doctor account if it does not already exist.
+    """
+
+    doctors_collection.update_one(
+        {"email": email},
+        {
+            "$setOnInsert": {
+                "email": email,
+                "is_active": True,
+                "created_at": datetime.now(timezone.utc),
+            }
+        },
+        upsert=True,
+    )
+
 
 def delete_activation_token(token: str):
-    pass
+    tokens_collection.delete_one({"token": token})

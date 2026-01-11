@@ -1,7 +1,7 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class Doctor(BaseModel):
-    id: int
     name: str
     specialty: str
     years_of_experience: int
@@ -9,5 +9,5 @@ class Doctor(BaseModel):
     phone: str
     email: str
     password_hash: str
-    is_active: bool
-    created_at: str
+    is_active: bool = False
+    created_at: datetime = None
