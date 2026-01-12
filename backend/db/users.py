@@ -54,6 +54,7 @@ def activate_user_by_email(email: str):
             "$setOnInsert": {
                 "email": email,
                 "is_active": True,
+                "profile_completed": False,
                 "created_at": datetime.now(timezone.utc),
             }
         },
