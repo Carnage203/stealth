@@ -33,12 +33,14 @@ export default function AppRoutes() {
         }
       />
 
+      {/* ===============Public Routes=============== */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/about-us" element={<About />} />
       </Route>
 
+      {/* ===============Protected Doctor Routes=============== */}
       <Route
         path="/doctor"
         element={
