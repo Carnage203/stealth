@@ -26,7 +26,7 @@ export function WorkflowDemo() {
   ];
 
   return (
-    <section id="workflow-demo" className="py-16 px-6 bg-background-light dark:bg-surface-dark">
+  <section id="workflow-demo" className="relative py-24 px-6 bg-slate-50 dark:bg-slate-900/40">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -35,7 +35,7 @@ export function WorkflowDemo() {
               <h2 className="text-3xl md:text-4xl font-bold text-text-main dark:text-white mb-2">
                 Workflow Demo
               </h2>
-              <p className="text-text-sub dark:text-gray-400">
+              <p className="text-text-sub text-slate-500 dark:text-slate-400">
                 See how DocuFlow AI works in real-time, from audio to billing.
               </p>
             </div>
@@ -149,7 +149,7 @@ export function WorkflowDemo() {
                 <h3 className="text-lg font-semibold text-text-main dark:text-white mb-1">
                   {feature.title}
                 </h3>
-                <p className="text-sm text-text-sub dark:text-gray-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   {feature.description}
                 </p>
               </div>

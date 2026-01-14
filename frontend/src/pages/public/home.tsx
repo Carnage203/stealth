@@ -1,3 +1,4 @@
+import { Benefits } from "@/components/home/benefits";
 import { Hero } from "@/components/home/hero";
 import { Process } from "@/components/home/process";
 import { WorkflowDemo } from "@/components/home/workFlowDemo";
@@ -11,6 +12,7 @@ export default function Home() {
       <Hero />
       <Process />
       <WorkflowDemo />
+      <Benefits />
     </div>
   );
 }

@@ -72,7 +72,7 @@ export function Process() {
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm text-text-sub dark:text-gray-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   {step.description}
                 </p>
               </div>
