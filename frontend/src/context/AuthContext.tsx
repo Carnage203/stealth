@@ -3,7 +3,7 @@ import {
   useContext,
   useState,
   useEffect,
-  ReactNode,
+  type ReactNode,
 } from "react";
 
 interface User {
@@ -55,12 +55,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
-    const response = await fetch(`${SERVER_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
+    // const response = await fetch(`${SERVER_URL}/api/auth/login`, {
+    const response = await fetch(
+      `https://docai.free.beeceptor.com/reset-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // credentials: "include",
+        body: JSON.stringify({ email, password }),
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json();
@@ -68,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const data = await response.json();
-    setUser(data.user);
+    setUser(data);
   };
 
   const logout = async () => {
@@ -88,12 +92,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await checkAuth();
   };
 
+  console.log("AuthContext user:", user);
+
   return (
     <AuthContext.Provider
       value={{
         user,
-        // isAuthenticated: !!user,
-        isAuthenticated: false,
+        isAuthenticated: !!user,
         isLoading,
         login,
         logout,
