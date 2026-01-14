@@ -82,7 +82,7 @@ export default function AccountActivation() {
 
     try {
       // Replace with your actual API endpoint
-      const response = await fetch(`${SERVER_URL}/api/auth/activate-account`, {
+      const response = await fetch(`${SERVER_URL}/api/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
@@ -148,9 +148,9 @@ export default function AccountActivation() {
             <div className="flex justify-center mb-4">
               <CheckCircle className="h-16 w-16 text-green-500" />
             </div>
-            <CardTitle>Account Activated!</CardTitle>
+            <CardTitle>Success!</CardTitle>
             <CardDescription>
-              Your account has been successfully activated. Redirecting to
+              Your password has been successfully reset. Redirecting to
               login...
             </CardDescription>
           </CardHeader>
@@ -163,9 +163,9 @@ export default function AccountActivation() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Activate Your Account</CardTitle>
+          <CardTitle>Reset Password</CardTitle>
           <CardDescription>
-            Set a password to complete your account activation
+            Create a strong password for your account to complete the password reset process.
           </CardDescription>
         </CardHeader>
         <CardContent>
