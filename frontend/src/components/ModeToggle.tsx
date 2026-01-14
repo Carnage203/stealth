@@ -11,7 +11,7 @@ export function ModeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="flex items-center justify-center size-9 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-text-main dark:text-white transition-colors"
+      className="hover:cursor-pointer flex items-center justify-center size-9 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-800 text-text-main dark:text-white transition-colors"
       aria-label="Toggle theme"
     >
       <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

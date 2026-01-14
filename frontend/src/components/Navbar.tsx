@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { ModeToggle } from "./ModeToggle";
-import { X, Menu  } from "lucide-react";
+import { X, Menu } from "lucide-react";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -44,11 +44,13 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             <ModeToggle />
 
-            <Link
-              to="/login"
-              className="hidden border-2 sm:flex items-center justify-center rounded-lg h-9 px-4 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-text-main dark:text-white text-sm font-medium transition-colors"
-            >
-              Log In
+            <Link to="/login" className="hidden sm:inline-block">
+              <Button
+                
+                className="hover:cursor-pointer h-9 px-4 border-0 rounded-lg bg-[#137fec] hover:bg-[#0b5cb3] text-white font-medium transition-colors"
+              >
+                Log In
+              </Button>
             </Link>
 
             {/* Mobile Menu Button */}
@@ -57,7 +59,7 @@ export function Navbar() {
               className="md:hidden flex items-center justify-center size-9 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               aria-label="Toggle menu"
             >
-              <Menu  className="h-5 w-5" />
+              <Menu className="h-5 w-5" />
             </button>
           </div>
         </div>

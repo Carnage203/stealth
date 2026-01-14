@@ -26,7 +26,7 @@ export function WorkflowDemo() {
   ];
 
   return (
-    <section className="py-16 px-6 bg-background-light dark:bg-surface-dark">
+    <section id="workflow-demo" className="py-16 px-6 bg-background-light dark:bg-surface-dark">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
