@@ -16,9 +16,3 @@ def hash_password(password: str) -> str:
 def verify_password(password: str, hashed_password: str) -> bool:
     return pwd_context.verify(password, hashed_password)
 
-if __name__ == "__main__":
-    # Example usage
-    print("Hashed Password:", hash_password("stealth@123"))
-    stored_hash = hash_password("stealth@123")
-    print(verify_password("stealth@123", stored_hash))  
-    print(verify_password("wrongpass", stored_hash))  
