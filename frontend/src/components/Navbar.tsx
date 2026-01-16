@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { ModeToggle } from "./ModeToggle";
-import { X, Menu } from "lucide-react";
+import { X, Menu, Hospital } from "lucide-react";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -10,12 +10,16 @@ export function Navbar() {
   return (
     <>
       <nav className="sticky top-0 z-50 w-full border-b border-[#f0f2f4] dark:border-gray-800 dark:bg-background-dark/80 backdrop-blur-md">
-        <div className="px-6 lg:px-12 flex h-16 items-center justify-between max-w-7xl mx-auto">
+        <div className="px-6 flex h-16 items-center justify-between max-w-7xl mx-auto">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 text-primary">
-            <h2 className="text-text-main dark:text-white text-lg font-bold tracking-tight">
+          <Link to="/" className="flex items-center text-primary">
+            {/* <h2 className="text-text-main dark:text-white text-lg font-bold tracking-tight">
               Logo
-            </h2>
+            </h2> */}
+            <Hospital className="h-8 w-8 mr-2"/>
+             <h2 className="text-xl font-bold tracking-tight ">
+                ClinicAI
+              </h2>
           </Link>
 
           {/* Desktop Navigation */}
@@ -44,12 +48,12 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             <ModeToggle />
 
-            <Link to="/login" className="hidden sm:inline-block">
+            <Link to="/get-activation-link" className="hidden sm:inline-block">
               <Button
                 
                 className="hover:cursor-pointer h-9 px-4 border-0 rounded-lg bg-[#137fec] hover:bg-[#0b5cb3] text-white font-medium transition-colors"
               >
-                Log In
+                Get Started
               </Button>
             </Link>
 
