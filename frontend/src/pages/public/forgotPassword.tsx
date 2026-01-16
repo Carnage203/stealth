@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Loader2, Mail, ArrowLeft } from "lucide-react";
+import { Loader2, Mail, ArrowLeft, Hospital,Lock, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function ForgotPassword() {
@@ -55,20 +55,7 @@ export default function ForgotPassword() {
           <div className="w-full max-w-[440px]">
             {/* Logo */}
             <div className="mb-12 flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500 text-white">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
+              <Hospital className="size-8 text-blue-500" />
               <h2 className="text-xl font-bold tracking-tight">ClinicAi</h2>
             </div>
 
@@ -180,48 +167,17 @@ export default function ForgotPassword() {
               </p>
               <div className="flex gap-6">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="size-4 text-green-500"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516 11.209 11.209 0 0 1-7.877-3.08Zm3.154 8.438a.75.75 0 1 0-1.06-1.06l-3.97 3.97-1.8-1.8a.75.75 0 1 0-1.06 1.06l2.33 2.33a.75.75 0 0 0 1.06 0l4.5-4.5Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                <ShieldCheck className="size-5 text-green-500" />
                   HIPAA COMPLIANT
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="size-4 text-blue-500"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516 11.209 11.209 0 0 1-7.877-3.08Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                <ShieldCheck className="size-5 text-blue-500" />
+
                   SOC2 TYPE II
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="size-4 text-slate-400"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                                 <Lock className="size-5 text-red-500" />
+
                   AES-256
                 </div>
               </div>

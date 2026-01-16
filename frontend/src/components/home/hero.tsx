@@ -4,9 +4,7 @@ import { Link } from "react-router-dom";
 
 export function Hero() {
   return (
-    <section
-  className="relative overflow-hidden bg-slate-50 pt-16 pb-24 md:pt-24 md:pb-32 px-6"
->
+    <section className="relative overflow-hidden bg-slate-50 dark:bg-slate-900/40 pt-16 pb-24 md:pt-24 md:pb-32 px-6">
       <div className="max-w-4xl mx-auto text-center flex flex-col items-center gap-6">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-600">
@@ -21,9 +19,9 @@ export function Hero() {
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-text-main dark:text-white tracking-tight leading-[1.1]">
           Practise Medicine,
           <br />
-         <span className="text-transparent bg-clip-text from-[#2B6DF6] to-[#60A5FA] bg-linear-to-r">
-  Not Data Entry.
-</span>
+          <span className="text-transparent bg-clip-text from-[#2B6DF6] to-[#60A5FA] bg-linear-to-r">
+            Not Data Entry.
+          </span>
         </h1>
 
         {/* Description */}
@@ -59,7 +57,7 @@ export function Hero() {
       </div>
 
       {/* Background Gradient */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 -z-10 w-[1000px] h-[600px] bg-linear-to-b from-blue-100/60 to-transparent rounded-[100%] blur-3xl pointer-events-none"></div>
+      {/* <div className="absolute top-0 left-1/2 -translate-x-1/2 -z-10 w-[1000px] h-[600px] bg-linear-to-b from-blue-100/60 to-transparent rounded-[100%] blur-3xl pointer-events-none"></div> */}
     </section>
   );
 }
