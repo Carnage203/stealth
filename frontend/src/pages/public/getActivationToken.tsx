@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 
 export default function GetActivationToken() {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -90,12 +91,12 @@ export default function GetActivationToken() {
                 </Label>
                 <div className="relative">
                   <Input
-                    id="email"
-                    type="email"
+                    id="name"
+                    type="text"
                     className="h-14 pr-12 text-base"
                     placeholder="Your full name"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 ">
