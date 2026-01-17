@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from schemas.schema import Patient
 from db.mongo_client import patients_collection, visits_collection
-from utils.id_generator import generate_patient_id
+from backend.utils.uniqueid import generate_patient_id
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/visits", tags=["visits"])
@@ -9,14 +9,19 @@ router = APIRouter(prefix="/visits", tags=["visits"])
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
-    summary="Create a new patient record",
+    summary="Create patient and visit record",
 )
-def create_patient_and_visit(payload: Patient):
-    patient_id = generate_patient_id()
+def create_visit(payload: Patient):
+    existing_patient = patients_collection.find_one({"patientId": payload.patientId})
+
+    if existing_patient:
+        patient_id = existing_patient["patientId"]
+    else:
+        patient_id = generate_patient_id()
     
     try:
         patient_doc = {
-            "patient_id": patient_id,
+            "patientId": patient_id,
             "name": payload.name,
             "age": payload.age,
             "gender": payload.gender,
@@ -28,8 +33,8 @@ def create_patient_and_visit(payload: Patient):
         patient_mongo_id = patient_result.inserted_id
 
         visit_doc = {
-            "patient_id": patient_id,
-            "transcript": [payload.transcript],
+            "patientId": patient_id,
+            "transcript": payload.transcript,
             "date": datetime.now(timezone.utc),
         }
 
@@ -44,16 +49,15 @@ def create_patient_and_visit(payload: Patient):
 
         return {
             "message": "Patient and visit created successfully",
-            "patient_id": patient_id,
-            "visit_id": str(visit_id),
+            "patientId": patient_id,
+            "visitId": str(visit_id),
         }
 
-    except Exception:
-        # rollback (no orphan data)
-        patients_collection.delete_one({"patient_id": patient_id})
-        visits_collection.delete_many({"patient_id": patient_id})
+    except HTTPException:
+        raise
 
+    except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail="Failed to create patient visit"
+            detail=f"Failed to create visit: {str(e)}"
         )

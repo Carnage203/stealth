@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Literal
+from typing import Literal, Optional
 
 class Doctor(BaseModel):
     fullName: str = Field(..., min_length=2)
@@ -13,6 +13,7 @@ class Doctor(BaseModel):
 
 
 class Patient(BaseModel):
+    patientId: Optional[str] = None  
     name: str = Field(..., min_length=2)
     age: int = Field(..., ge=0, le=120)
     gender: Literal["Male", "Female", "Other"]
