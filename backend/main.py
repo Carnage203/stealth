@@ -8,6 +8,7 @@ from api.update_profile import router as update_profile_router
 from api.refresh_token import router as refresh_token_router
 from api.login import router as login_router
 from api.logout import router as logout_router
+from api.patient_create import router as patient_create_router
 
 load_dotenv()
 
@@ -29,6 +30,7 @@ app.include_router(login_router, prefix="/api")
 app.include_router(logout_router, prefix="/api")
 app.include_router(update_profile_router, prefix="/api")
 app.include_router(refresh_token_router, prefix="/api")
+app.include_router(patient_create_router, prefix="/api")
 
 @app.get("/")
 def health():

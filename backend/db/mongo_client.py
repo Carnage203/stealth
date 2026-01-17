@@ -34,3 +34,5 @@ except (ConnectionFailure, ConfigurationError) as e:
 db = client[DB_NAME]
 doctors_collection = db["doctors"]
 tokens_collection = db["tokens"]
+patients_collection = db["patients"]
+visits_collection = db["visits"]
