@@ -55,10 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
-    // const response = await fetch(`${SERVER_URL}/api/auth/login`, {
-    const response = await fetch(
-      `https://docai.free.beeceptor.com/reset-password`,
-      {
+    const response = await fetch(`${SERVER_URL}/api/auth/login`, {
+ 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // credentials: "include",

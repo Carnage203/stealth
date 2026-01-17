@@ -33,10 +33,12 @@ def activate_account(token: str):
         )
 
     email = token_doc["email"]
+    name  = token_doc["name"]
 
     try:
         activate_user_by_email(email)
-        delete_activation_token(token)
+        # delete_activation_token(token)
+
 
     except Exception:
         logger.exception("Account activation failed")
@@ -46,5 +48,7 @@ def activate_account(token: str):
         )
 
     return {
-        "message": "Account activated successfully.",
+        "name" : name,
+        "email" : email,
+        "message": "Account activated successfully."
     }

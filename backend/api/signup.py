@@ -24,9 +24,9 @@ def signup(request: SignupRequest):
             return {
                 "message": "An activation email has already been sent. Please check your inbox.",
             }
-    activation_token = create_user_activation_token(request.email)
+    activation_token = create_user_activation_token(request.name, request.email)
     try:
-        send_activation_email(request.email, activation_token)
+        send_activation_email(request.name, request.email, activation_token)
     except Exception as e:
         logger.exception("Failed to send activation email")
         raise HTTPException(

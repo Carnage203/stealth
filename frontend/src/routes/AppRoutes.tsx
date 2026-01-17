@@ -4,7 +4,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 
 // Public Pages
 import Home from "@/pages/public/home";
-import NotFound from "@/pages/NotFound";
+import NotFound from "@/pages/public/NotFound";
 import Login from "@/pages/public/login";
 import About from "@/pages/public/about";
 import AccountActivation from "@/pages/public/resetPassword";
@@ -57,7 +57,7 @@ export default function AppRoutes() {
       </Route>
 
       {/* ===============Private Routes=============== */}
-      {/* <Route path='/test' element={<TEST />} /> */}
+      <Route path='/test' element={<TEST />} />
       {/* <Route path="/record" element={<RC />} /> */}
     </Routes>
   );
