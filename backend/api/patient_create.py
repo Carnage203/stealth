@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from schemas.schema import Patient
 from db.mongo_client import patients_collection, visits_collection
-from backend.utils.uniqueid import generate_patient_id
+from utils.uniqueid import generate_patient_id
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/visits", tags=["visits"])

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Literal, Optional
+from typing import Dict, Literal, Optional
 
 class Doctor(BaseModel):
     fullName: str = Field(..., min_length=2)
@@ -22,3 +22,6 @@ class Patient(BaseModel):
 class CompleteProfileRequest(BaseModel):
     doctor: Doctor
     token : str
+
+class VisitUpdate(BaseModel):
+    transcript: Dict[str, str]
