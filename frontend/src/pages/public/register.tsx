@@ -481,13 +481,15 @@ export default function Registration() {
 
       {/* RIGHT COLUMN */}
       <div className="hidden lg:flex flex-col justify-center px-14 bg-gradient-to-b from-blue-50 to-blue-100">
-        <span className="inline-flex items-center gap-2 text-xs font-medium text-teal-700 bg-white px-4 py-1 rounded-full w-fit mb-6">
-          ● EMPOWERING INDEPENDENT CARE
+        <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.15em] text-teal-700 bg-white px-5 py-1.5 rounded-full shadow-sm w-fit mb-6">
+          <span className="w-2 h-2 rounded-full bg-teal-600"></span>
+          EMPOWERING INDEPENDENT CARE
         </span>
 
+
         <h2 className="text-4xl font-semibold text-gray-900 leading-tight mb-10">
-          Focus on patients,{" "}
-          <span className="text-blue-600 italic font-serif">
+          Focus on patients,
+          <span className="block text-blue-600 italic font-serif">
             not paperwork.
           </span>
         </h2>
