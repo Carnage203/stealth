@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Query
 from db.mongo_client import patients_collection
 from schemas.schema import PatientResponse
 
-router = APIRouter(prefix="/patients", tags=["Patients"])
+router = APIRouter(prefix="/patients", tags=["patients"])
 
 @router.get("/", response_model=list[PatientResponse])
 def get_all_patients(

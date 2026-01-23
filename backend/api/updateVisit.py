@@ -4,7 +4,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from schemas.schema import VisitResponse, VisitUpdate
 
-router = APIRouter(prefix="/visits", tags=["Visits"])
+router = APIRouter(prefix="/visits", tags=["visits"])
 
 
 @router.put("/{visit_id}", response_model=VisitResponse)

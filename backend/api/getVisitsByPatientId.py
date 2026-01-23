@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from db.mongo_client import patients_collection, visits_collection
 
-router = APIRouter(prefix="/patients", tags=["Patients"])
+router = APIRouter(prefix="/patients", tags=["patients"])
 
 @router.get("/{patient_id}/visits")
 def get_patient_visits(patient_id: str):
