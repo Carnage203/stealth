@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from db.mongo_client import patients_collection
-from shemas.schema import PatientResponse
+from schemas.schema import PatientResponse
 
 
 router = APIRouter(prefix="/patients", tags=["Patients_id"])

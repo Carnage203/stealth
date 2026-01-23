@@ -3,16 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from api.signup import router as signup_router
 from api.activate import router as activate_router
-from api.complete_profile import router as complete_profile_router
-from api.update_profile import router as update_profile_router
-from api.refresh_token import router as refresh_token_router
+from backend.api.completeProfile import router as complete_profile_router
+from backend.api.updateProfile import router as update_profile_router
+from backend.api.refreshToken import router as refresh_token_router
 from api.login import router as login_router
 from api.logout import router as logout_router
-from api.patient_create import router as patient_create_router
-from api.patient_detail import router as patient_detail_router
-from api.patient_visits import router as patient_visits_router
-from api.patients_list import router as patients_list_router
-from api.visits_detail import router as visits_router
+from backend.api.create_patient import router as patient_create_router
+from backend.api.fetch_patient import router as patient_detail_router
+from backend.api.fetch_visits import router as patient_visits_router
+from backend.api.getPatients import router as patients_list_router
+from backend.api.getVisitsByVisitId import router as visits_router
 
 load_dotenv()
 

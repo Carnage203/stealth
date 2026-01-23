@@ -6,20 +6,6 @@ from schemas.schema import VisitResponse, VisitUpdate
 
 router = APIRouter(prefix="/visits", tags=["Visits"])
 
-@router.get("/{visit_id}", response_model=VisitResponse)
-def get_visit(visit_id: str):
-    try:
-        visit = visits_collection.find_one({"_id": ObjectId(visit_id)})
-    except InvalidId:
-        raise HTTPException(status_code=400, detail="Invalid visit id")
-
-    if not visit:
-        raise HTTPException(status_code=404, detail="Visit not found")
-
-    visit["id"] = str(visit.pop("_id"))
-
-    return visit
-
 
 @router.put("/{visit_id}", response_model=VisitResponse)
 def update_visit(visit_id: str, payload: VisitUpdate):
@@ -38,4 +24,3 @@ def update_visit(visit_id: str, payload: VisitUpdate):
     updated_visit["id"] = str(updated_visit.pop("_id"))
 
     return updated_visit
-
