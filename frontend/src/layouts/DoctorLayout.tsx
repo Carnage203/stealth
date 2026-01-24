@@ -1,7 +1,17 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { LayoutDashboard, Users, User, LogOut, LogIn, LogInIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  User,
+  LogOut,
+  LogIn,
+  Hospital,
+  LogInIcon,
+  MicIcon,
+} from "lucide-react";
 import path from "node:path";
+import { ModeToggle } from "@/components/ModeToggle";
 
 export const DoctorLayout = () => {
   const location = useLocation();
@@ -30,10 +40,10 @@ export const DoctorLayout = () => {
       icon: User,
     },
     {
-      name: "Login",
-      path: "/login",
-      icon: LogInIcon,  
-    }
+      name: "Record Consultation",
+      path: "consultations",
+      icon: MicIcon,
+    },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -44,22 +54,17 @@ export const DoctorLayout = () => {
       <aside className="w-64 bg-slate-900 text-white flex flex-col">
         {/* Logo */}
         <div className="p-6 border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500 text-white">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="size-6"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <h2 className="text-xl font-bold tracking-tight">ClinicAi</h2>
+          <div className="flex items-center justify-between gap-3">
+            <Link to="/doctor">
+              <div className="flex items-center gap-2">
+                <Hospital className="size-10 text-blue-500" />
+                {/* <h2 className="font-bold tracking-tight text-blue-500">
+              ClinicAI
+            </h2> */}
+              </div>
+            </Link>
+
+            <ModeToggle />
           </div>
         </div>
 

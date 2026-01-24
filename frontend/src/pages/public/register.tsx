@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { NumericFormat } from "react-number-format";
 import {
   Mail,
   Lock,
@@ -200,7 +203,10 @@ export default function Registration() {
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
       {/* LEFT COLUMN */}
       <div className="flex w-full flex-col items-center justify-center px-6 py-12 lg:px-20 xl:px-24 bg-white">
+              <div className="w-full max-w-lg">
+
         {/* Logo */}
+
         <Link to="/" className="mb-10 inline-block">
           <div className="flex items-center gap-3">
             <Hospital className="size-6 text-blue-600" />
@@ -292,7 +298,9 @@ export default function Registration() {
                 <Input
                   id="experience"
                   type="number"
-                  className="h-12 pr-12"
+                  min={1}
+                  max={60}
+                  className="h-12"
                   placeholder="e.g. 10"
                   value={formData.yearsOfExperience}
                   onChange={(e) =>
@@ -305,6 +313,7 @@ export default function Registration() {
                     </div> */}
               </div>
             </div>
+
           </div>
 
           {/* Practice Type */}
@@ -378,26 +387,37 @@ export default function Registration() {
 
           {/* Phone Number */}
           <div className="flex flex-col gap-2">
-            <Label htmlFor="phoneNumber" className="text-sm font-semibold">
-              Phone Number
-            </Label>
-            <div className="relative">
-              <Input
-                id="phoneNumber"
-                type="tel"
-                className="h-12 pr-12"
-                placeholder="+91 9876543210"
-                value={formData.phoneNumber}
-                onChange={(e) =>
-                  handleInputChange("phoneNumber", e.target.value)
-                }
-                required
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
-                <Phone className="size-5" />
-              </div>
-            </div>
-          </div>
+  <Label htmlFor="phoneNumber" className="text-sm font-semibold">
+    Phone Number
+  </Label>
+
+  <div className="relative">
+    <PhoneInput
+      country={"in"} // default country
+      value={formData.phoneNumber}
+      onChange={(value) =>
+        handleInputChange("phoneNumber", value)
+      }
+      inputProps={{
+        name: "phoneNumber",
+        required: true,
+        id: "phoneNumber",
+      }}
+      containerClass="w-full"
+      inputClass="!w-full !h-12 !pl-14 !pr-12 !rounded-md !border !border-input !text-sm"
+      buttonClass="!border-input !rounded-l-md"
+      dropdownClass="!text-sm"
+      enableSearch
+      countryCodeEditable={false}
+    />
+
+    {/* Phone icon */}
+    <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+      <Phone className="size-5" />
+    </div>
+  </div>
+</div>
+
 
           {/* Password */}
           <div className="flex flex-col gap-2">
@@ -456,17 +476,20 @@ export default function Registration() {
           <span>HIPAA COMPLIANT</span>
           <span>BANK-GRADE SECURITY</span>
         </div>
+        </div>
       </div>
 
       {/* RIGHT COLUMN */}
       <div className="hidden lg:flex flex-col justify-center px-14 bg-gradient-to-b from-blue-50 to-blue-100">
-        <span className="inline-flex items-center gap-2 text-xs font-medium text-teal-700 bg-white px-4 py-1 rounded-full w-fit mb-6">
-          ● EMPOWERING INDEPENDENT CARE
+        <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.15em] text-teal-700 bg-white px-5 py-1.5 rounded-full shadow-sm w-fit mb-6">
+          <span className="w-2 h-2 rounded-full bg-teal-600"></span>
+          EMPOWERING INDEPENDENT CARE
         </span>
 
+
         <h2 className="text-4xl font-semibold text-gray-900 leading-tight mb-10">
-          Focus on patients,{" "}
-          <span className="text-blue-600 italic font-serif">
+          Focus on patients,
+          <span className="block text-blue-600 italic font-serif">
             not paperwork.
           </span>
         </h2>

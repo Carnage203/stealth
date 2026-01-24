@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+  const SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 
   // Check if user is authenticated on mount
   useEffect(() => {
@@ -36,13 +36,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${SERVER_URL}/api/auth/me`, {
-        credentials: "include", // Include cookies
+      const response = await fetch(`${SERVER_URL}/api/auth/refresh`, {
+        method: "GET",
+        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
-        setUser(data.user);
+        if (data.user) {
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
@@ -56,13 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const response = await fetch(`${SERVER_URL}/api/auth/login`, {
- 
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // credentials: "include",
-        body: JSON.stringify({ email, password }),
-      }
-    );
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
+    });
 
     if (!response.ok) {
       const error = await response.json();
@@ -70,13 +73,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const data = await response.json();
-    // setUser(data.user); // this i will use when backend is ready
-    setUser(data);
+    if (data.user) {
+      setUser(data.user);
+    }
   };
 
   const logout = async () => {
     try {
-      await fetch(`${SERVER_URL}/api/auth/logout`, {
+      await fetch(`${SERVER_URL}/api/logout`, {
         method: "POST",
         credentials: "include",
       });
