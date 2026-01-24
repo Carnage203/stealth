@@ -5,7 +5,7 @@ from db.users import get_token_by_email, create_user_activation_token
 from datetime import datetime, timezone
 import logging
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter()
 
 logger = logging.getLogger(__name__)
 

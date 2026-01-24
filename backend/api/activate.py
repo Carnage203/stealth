@@ -3,7 +3,7 @@ from db.users import get_activation_token, activate_user_by_email, delete_activa
 from datetime import datetime, timezone
 import logging
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
 

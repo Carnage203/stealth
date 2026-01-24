@@ -5,7 +5,7 @@ from db.users import delete_activation_token
 from utils.security import hash_password
 import logging
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
 @router.post(

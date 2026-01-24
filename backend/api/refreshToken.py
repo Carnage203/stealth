@@ -12,7 +12,7 @@ ALGORITHM = os.getenv("ALGORITHM")
 IS_PROD = os.getenv("ENVIRONMENT") == "production"
 
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter()
 
 @router.get(
     "/refresh",
@@ -68,7 +68,7 @@ def refresh_token(request: Request, response: Response):
             value=access_token,
             httponly=True,
             secure=IS_PROD,
-            samesite="none",
+            samesite="none" if IS_PROD else "lax",
             max_age=900,
             path="/"
         )
@@ -78,7 +78,7 @@ def refresh_token(request: Request, response: Response):
             value=refresh_token,
             httponly=True,
             secure=IS_PROD,
-            samesite="none",
+            samesite="none" if IS_PROD else "lax",
             max_age=REFRESH_EXPIRE_DAYS * 86400,
             path="/"
         )
