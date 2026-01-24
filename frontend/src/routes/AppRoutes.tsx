@@ -62,7 +62,7 @@ export default function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="patients" element={<Patients />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="consultations/:patientId" element={<RecordingConsultationCard />} />
+        <Route path="consultations" element={<RecordingConsultationCard />} />
       </Route>
 
       {/* ===============Private Routes=============== */}

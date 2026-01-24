@@ -105,7 +105,7 @@ export const DoctorLayout = () => {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 bg-gray-100">
+      <main className="flex-1">
         <Outlet />
       </main>
     </div>

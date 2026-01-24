@@ -60,7 +60,7 @@ export default function GetActivationToken() {
 
     try {
       console.log("Form submitted:", formData);
-      const response = await fetch(`${SERVER_URL}/api/auth/signup`,{
+      const response = await fetch(`${SERVER_URL}/auth/signup`,{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

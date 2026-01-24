@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${SERVER_URL}/api/auth/refresh`, {
+      const response = await fetch(`${SERVER_URL}/auth/refresh`, {
         method: "GET",
         credentials: "include",
       });
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
-    const response = await fetch(`${SERVER_URL}/api/auth/login`, {
+    const response = await fetch(`${SERVER_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch(`${SERVER_URL}/api/logout`, {
+      await fetch(`${SERVER_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
