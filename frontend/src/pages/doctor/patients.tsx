@@ -1,7 +1,15 @@
-import React, { useState } from 'react'
-import { Search, Plus, Filter, MoreVertical, Phone, Mail, Calendar } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import React, { useState } from "react";
+import {
+  Search,
+  Plus,
+  Filter,
+  MoreVertical,
+  Phone,
+  Mail,
+  Calendar,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -9,66 +17,67 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu";
 
 // Mock data
 const mockPatients = [
   {
     id: 1,
-    name: 'John Doe',
+    name: "John Doe",
     age: 45,
-    gender: 'Male',
-    phone: '+91 9876543210',
-    email: 'john.doe@email.com',
-    lastVisit: '2024-01-15',
-    condition: 'Hypertension'
+    gender: "Male",
+    phone: "+91 9876543210",
+    email: "john.doe@email.com",
+    lastVisit: "2024-01-15",
+    condition: "Hypertension",
   },
   {
     id: 2,
-    name: 'Jane Smith',
+    name: "Jane Smith",
     age: 32,
-    gender: 'Female',
-    phone: '+91 9876543211',
-    email: 'jane.smith@email.com',
-    lastVisit: '2024-01-14',
-    condition: 'Diabetes'
+    gender: "Female",
+    phone: "+91 9876543211",
+    email: "jane.smith@email.com",
+    lastVisit: "2024-01-14",
+    condition: "Diabetes",
   },
   {
     id: 3,
-    name: 'Mike Johnson',
+    name: "Mike Johnson",
     age: 58,
-    gender: 'Male',
-    phone: '+91 9876543212',
-    email: 'mike.j@email.com',
-    lastVisit: '2024-01-10',
-    condition: 'Arthritis'
-  }
-]
+    gender: "Male",
+    phone: "+91 9876543212",
+    email: "mike.j@email.com",
+    lastVisit: "2024-01-10",
+    condition: "Arthritis",
+  },
+];
 
 export default function Patients() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [patients] = useState(mockPatients)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [patients] = useState(mockPatients);
 
-  const filteredPatients = patients.filter(patient =>
-    patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    patient.phone.includes(searchQuery)
-  )
+  const filteredPatients = patients.filter(
+    (patient) =>
+      patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient.phone.includes(searchQuery),
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen  p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Patients</h1>
-            <p className="text-gray-600 mt-1">Manage your patient records</p>
+            <h1 className="text-3xl font-bold">Patients</h1>
+            <p className="text-gray-300 mt-1">Manage your patient records</p>
           </div>
           <Button className="flex items-center gap-2">
             <Plus className="size-4" />
@@ -77,7 +86,7 @@ export default function Patients() {
         </div>
 
         {/* Search and Filter */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
+        <div className="rounded-lg shadow p-4 mb-6 border">
           <div className="flex gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
@@ -97,7 +106,7 @@ export default function Patients() {
         </div>
 
         {/* Patients Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="border rounded-lg shadow overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -114,7 +123,9 @@ export default function Patients() {
               {filteredPatients.length > 0 ? (
                 filteredPatients.map((patient) => (
                   <TableRow key={patient.id}>
-                    <TableCell className="font-medium">{patient.name}</TableCell>
+                    <TableCell className="font-medium">
+                      {patient.name}
+                    </TableCell>
                     <TableCell>{patient.age}</TableCell>
                     <TableCell>{patient.gender}</TableCell>
                     <TableCell>
@@ -161,7 +172,10 @@ export default function Patients() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-8 text-gray-500"
+                  >
                     No patients found
                   </TableCell>
                 </TableRow>
@@ -186,5 +200,5 @@ export default function Patients() {
         </div>
       </div>
     </div>
-  )
+  );
 }
