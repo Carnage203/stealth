@@ -25,6 +25,5 @@ You are an expert Medical AI Scribe. Your task is to generate a professional and
   ]
 }}
 
-**Conversation:**
-{conversation}
+
 """

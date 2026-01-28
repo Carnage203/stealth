@@ -13,6 +13,7 @@ from api.getVisitsByPatientId import router as get_visits_by_patient_id_router
 from api.getVisitsByVisitId import router as get_visits_by_visit_id_router
 from api.updateVisit import router as update_visit_router
 from api.getCloudinarySignature import router as generate_signature
+from api.generateSoap import router as generate_soap_router
 
 apiRouter = APIRouter()
 
@@ -95,7 +96,10 @@ apiRouter.include_router(
     prefix='/visits',
     tags=['visits']
 )
-
-
+apiRouter.include_router(
+    generate_soap_router,
+    prefix='/llm',
+    tags=['llm']
+)
 
 
