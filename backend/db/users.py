@@ -17,11 +17,12 @@ def get_token_by_email(email: str) -> Optional[dict]:
         "created_at": token_doc["created_at"],
     }
 
-def create_user_activation_token(email: str):
+def create_user_activation_token(name:str, email: str):
     token = generate_activation_token()
     expiry = token_expiry()
 
     token_doc = {
+        "name" : name,
         "email": email,
         "token": token,
         "expires_at": expiry,
@@ -37,6 +38,7 @@ def get_activation_token(token: str) -> Optional[dict]:
     if not obj:
         return None
     return {
+        "name" : obj["name"],
         "email": obj["email"],
         "token": obj["token"],
         "expires_at": obj["expires_at"],
@@ -60,7 +62,6 @@ def activate_user_by_email(email: str):
         },
         upsert=True,
     )
-
 
 def delete_activation_token(token: str):
     tokens_collection.delete_one({"token": token})

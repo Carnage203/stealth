@@ -4,7 +4,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 
 // Public Pages
 import Home from "@/pages/public/home";
-import NotFound from "@/pages/NotFound";
+import NotFound from "@/pages/public/NotFound";
 import Login from "@/pages/public/login";
 import About from "@/pages/public/about";
 import AccountActivation from "@/pages/public/resetPassword";
@@ -17,13 +17,20 @@ import Dashboard from "../pages/doctor/dashboard";
 import Profile from "../pages/doctor/profile";
 import { PublicLayout } from "../layouts/PublicLayout";
 import GetActivationToken from "../pages/public/getActivationToken";
+import Patients from "@/pages/doctor/patients";
+import RecordingConsultationCard from "@/components/RecordingConsultationCard";
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();
 
   return (
     <Routes>
-      <Route path="/get-activation-link" element={<GetActivationToken />} />
+      <Route path="/get-activation-link" element={
+        
+        isAuthenticated ? <Navigate to="/doctor" replace /> :
+        <GetActivationToken />
+        
+        } />
 
       {/* ===============Public Routes=============== */}
       <Route path="/doctor-registration" element={<Register />} />
@@ -53,11 +60,13 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="patients" element={<Patients />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="consultations" element={<RecordingConsultationCard />} />
       </Route>
 
       {/* ===============Private Routes=============== */}
-      {/* <Route path='/test' element={<TEST />} /> */}
+      <Route path="/test" element={<TEST />} />
       {/* <Route path="/record" element={<RC />} /> */}
     </Routes>
   );
