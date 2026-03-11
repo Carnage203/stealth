@@ -5,6 +5,7 @@ from api.profile.completeProfile import router as complete_profile_router
 from api.profile.updateProfile import router as update_profile_router
 from api.auth.refreshToken import router as refresh_token_router
 from api.auth.login import router as login_router
+from api.auth.me import router as me_router
 from api.auth.logout import router as logout_router
 from api.createConsulation import router as create_consultation_router
 from api.patients.getPatientByPatientId import router as patient_detail_router
@@ -64,6 +65,12 @@ apiRouter.include_router(
 )
 apiRouter.include_router(
     update_profile_router,
+    prefix='/auth',
+    tags=['Auth']
+)
+
+apiRouter.include_router(
+    me_router,
     prefix='/auth',
     tags=['Auth']
 )

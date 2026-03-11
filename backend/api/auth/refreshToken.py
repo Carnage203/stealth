@@ -18,7 +18,7 @@ router = APIRouter()
     "/refresh",
     status_code=status.HTTP_200_OK,
     summary="Refresh access and refresh tokens",
-    dependencies=[Depends(verify_csrf)],
+    # dependencies=[Depends(verify_csrf)],
 )
 def refresh_token(request: Request, response: Response):
     token = request.cookies.get("refresh_token")
@@ -85,13 +85,7 @@ def refresh_token(request: Request, response: Response):
         )
 
         return {
-            
             "message": "Token refreshed successfully",
-                "user": {
-                "id": str(user["_id"]),
-                "email": user["email"],
-                "name": user["fullName"]
-            }
         }
 
     except JWTError:

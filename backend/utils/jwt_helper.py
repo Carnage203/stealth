@@ -42,7 +42,9 @@ def create_refresh_token(email: str):
 def verify_csrf(request: Request):
     csrf_cookie = request.cookies.get("csrf_token")
     csrf_header = request.headers.get("X-CSRF-Token")
+    print(f"CSRF Cookie: {csrf_cookie}, CSRF Header: {csrf_header}")
 
+    
     if not csrf_cookie or csrf_cookie != csrf_header:
         raise HTTPException(status_code=403, detail="CSRF validation failed")
 
