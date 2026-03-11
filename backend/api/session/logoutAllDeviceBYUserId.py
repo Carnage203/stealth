@@ -4,7 +4,9 @@ from bson import ObjectId
 
 router = APIRouter()
 
-@router.delete("/all/{user_id}")
+@router.delete("/logout/all-devices",
+            summary="Logout from all devices",
+            description="Revokes all active sessions for the authenticated user.")
 async def logout_all(user_id: str):
     result = sessions_collection.update_many(
         {"user_id": ObjectId(user_id)},

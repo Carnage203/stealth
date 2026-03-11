@@ -11,6 +11,7 @@ import {
   MicIcon,
   Menu,
   ChevronLeft,
+  Settings,
 } from "lucide-react";
 import { useState } from "react";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
@@ -19,6 +20,7 @@ const menuItems = [
   { name: "Dashboard", path: "/doctor", icon: LayoutDashboard },
   { name: "Patients", path: "/doctor/patients", icon: Users },
   { name: "Profile", path: "/doctor/profile", icon: User },
+  { name: "Settings", path: "/doctor/settings", icon: Settings },
   { name: "Record Consultation", path: "/doctor/consultations", icon: MicIcon },
 ];
 
