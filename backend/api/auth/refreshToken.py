@@ -11,14 +11,13 @@ SECRET_KEY = os.getenv("JWT_SECRET")
 ALGORITHM = os.getenv("ALGORITHM")
 IS_PROD = os.getenv("ENVIRONMENT") == "production"
 
-
 router = APIRouter()
 
 @router.post(
     "/refresh",
     status_code=status.HTTP_200_OK,
     summary="Refresh access and refresh tokens",
-    # dependencies=[Depends(verify_csrf)],
+    dependencies=[Depends(verify_csrf)],
 )
 def refresh_token(request: Request, response: Response):
     token = request.cookies.get("refresh_token")

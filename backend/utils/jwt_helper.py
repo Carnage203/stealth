@@ -62,3 +62,23 @@ def get_current_user(request: Request):
         raise HTTPException(status_code=401)
 
 
+def create_reset_token(user_id: str) -> str:
+    payload = {
+        "sub": user_id,
+        "type": "password_reset",
+        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+        "iat": datetime.now(timezone.utc),
+    }
+    return jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
+
+def verify_reset_token(token: str) -> str:
+    """Returns user_id if valid, raises HTTPException otherwise."""
+    try:
+        payload = jwt.decode(token, os.getenv("JWT_SECRET"), algorithms=["HS256"])
+        if payload.get("type") != "password_reset":
+            raise HTTPException(status_code=400, detail="Invalid token type")
+        return payload["sub"]
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=400, detail="Reset link has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=400, detail="Invalid reset token")

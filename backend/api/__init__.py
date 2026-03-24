@@ -16,7 +16,7 @@ from api.cloudinary.deleteCloudinaryFile import router as delete_cloudinary_file
 from api.session.getAllSessions import router as get_all_sessions_router
 from api.session.logoutDeviceBySessionId import router as logout_device_by_session_id_router
 from api.session.logoutAllDeviceBYUserId import router as logout_all_device_router
-
+from api.auth.resetToken import router as reset_token_router
 
 apiRouter = APIRouter()
 
@@ -68,9 +68,13 @@ apiRouter.include_router(
     prefix='/auth',
     tags=['Auth']
 )
-
 apiRouter.include_router(
     me_router,
+    prefix='/auth',
+    tags=['Auth']
+)
+apiRouter.include_router(
+    reset_token_router,
     prefix='/auth',
     tags=['Auth']
 )

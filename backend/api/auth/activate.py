@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import logging
 
 router = APIRouter()
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 @router.post(

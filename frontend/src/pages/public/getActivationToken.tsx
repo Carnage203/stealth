@@ -12,10 +12,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
-
 export default function GetActivationToken() {
-
-  const SERVER_URL = import.meta.env.VITE_API_BASE_URL!
+  const SERVER_URL = import.meta.env.VITE_API_BASE_URL!;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -60,20 +58,20 @@ export default function GetActivationToken() {
 
     try {
       console.log("Form submitted:", formData);
-      const response = await fetch(`${SERVER_URL}/auth/signup`,{
-        method: 'POST',
+      const response = await fetch(`${SERVER_URL}/auth/signup`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
+      });
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
-      
+
       const data = await response.json();
 
-      toast.success(data.message , { duration: 5000 });
+      toast.success(data.message, { duration: 5000 });
       setFormData({ name: "", email: "" });
     } catch (error) {
       console.error("Submission error:", error);
@@ -95,134 +93,128 @@ export default function GetActivationToken() {
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
       {/* LEFT SECTION */}
-      <div className="flex flex-col justify-center items-center px-6 sm:px-12 lg:px-20 bg-white">
+      <div className="flex flex-col justify-center items-center px-6 sm:px-12 lg:px-20 ">
         {/* <div className="flex flex-col justify-center items-center px-6 sm:px-12 lg:px-20 lg:items-start bg-white"> */}
-    <div className="w-full max-w-lg">
-        {/* Logo */}
-        <Link to="/">
-          <div className="mb-16 flex items-center gap-2">
-            <Hospital className="size-10 text-blue-500" />
-            <h2 className="text-xl font-bold tracking-tight text-blue-500">
-              ClinicAI
-            </h2>
-          </div>
-        </Link>
-
-        {/* Heading */}
-        <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-          {/* <h1 className="text-3xl font-semibold text-gray-900 mb-2 text-center lg:text-left"> */}
-          Get started for free
-        </h1>
-        <p className="text-gray-500 mb-8 max-w-md">
-          {/* <p className="text-gray-500 mb-8 max-w-md text-center lg:text-left"> */}
-          Join thousands of independent practitioners using ClinicAI to
-          streamline their clinical documentation.
-        </p>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="w-full max-w-md">
-          <div className="mb-5">
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-800 mb-1"
-            >
-              Name
-            </label>
-            <div className="relative">
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Dr. John Smith"
-                className={`text-gray-700 w-full rounded-lg border ${
-                  errors.name ? "border-red-500" : "border-gray-300"
-                } px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 ${
-                  errors.name ? "focus:ring-red-500" : "focus:ring-blue-500"
-                }`}
-                disabled={isSubmitting}
-              />
-              <Book className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <div className="w-full max-w-lg">
+          {/* Logo */}
+          <Link to="/">
+            <div className="mb-16 flex items-center gap-2">
+              <Hospital className="size-10 text-blue-500" />
+              <h2 className="text-xl font-bold tracking-tight text-blue-500">
+                ClinicAI
+              </h2>
             </div>
-            {errors.name && (
-              <p className="mt-1 text-xs text-red-600">{errors.name}</p>
-            )}
-          </div>
+          </Link>
 
-          <div className="mb-5">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-800 mb-1"
-            >
-              Work Email
-            </label>
-            <div className="relative">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="dr.smith@yourclinic.com"
-                className={` text-gray-700 w-full rounded-lg border ${
-                  errors.email ? "border-red-500" : "border-gray-300"
-                } px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 ${
-                  errors.email ? "focus:ring-red-500" : "focus:ring-blue-500"
-                }`}
-                disabled={isSubmitting}
-              />
-              <Mail className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-            </div>
-            {errors.email && (
-              <p className="mt-1 text-xs text-red-600">{errors.email}</p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="hover:cursor-pointer w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 text-white font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="size-5 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              <>
-                Get Activation Link
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-
-          <p className="text-sm text-gray-500 mt-4 text-center lg:text-left">
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-blue-600 font-medium hover:underline"
-            >
-              Log In
-            </Link>
+          {/* Heading */}
+          <h1 className="text-3xl font-semibold mb-2">
+            {/* <h1 className="text-3xl font-semibold text-gray-900 mb-2 text-center lg:text-left"> */}
+            Get started for free
+          </h1>
+          <p className=" mb-8 max-w-md">
+            {/* <p className="text-gray-500 mb-8 max-w-md text-center lg:text-left"> */}
+            Join thousands of independent practitioners using ClinicAI to
+            streamline their clinical documentation.
           </p>
-        </form>
 
-        {/* Compliance */}
-        <div className="flex gap-6 mt-10 text-xs text-gray-500">
-          <div className="flex items-center gap-2">
-            <span className="w-4 h-4 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-              ✓
-            </span>
-            HIPAA COMPLIANT
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="w-full max-w-md">
+            <div className="mb-5">
+              <label htmlFor="name" className="block text-sm font-medium mb-1">
+                Name
+              </label>
+              <div className="relative">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Dr. John Smith"
+                  className={` w-full rounded-lg border ${
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  } px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 ${
+                    errors.name ? "focus:ring-red-500" : "focus:ring-blue-500"
+                  }`}
+                  disabled={isSubmitting}
+                />
+                <Book className="absolute right-3 top-1/2 -translate-y-1/2  w-5 h-5" />
+              </div>
+              {errors.name && (
+                <p className="mt-1 text-xs text-red-600">{errors.name}</p>
+              )}
+            </div>
+
+            <div className="mb-5">
+              <label htmlFor="email" className="block text-sm font-medium mb-1">
+                Work Email
+              </label>
+              <div className="relative">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="dr.smith@yourclinic.com"
+                  className={`w-full rounded-lg border ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 ${
+                    errors.email ? "focus:ring-red-500" : "focus:ring-blue-500"
+                  }`}
+                  disabled={isSubmitting}
+                />
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              </div>
+              {errors.email && (
+                <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="hover:cursor-pointer w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 text-white font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-5 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  Get Activation Link
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+
+            <p className="text-sm mt-4 text-center lg:text-left">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-blue-600 font-medium hover:underline"
+              >
+                Log In
+              </Link>
+            </p>
+          </form>
+
+          {/* Compliance */}
+          <div className="flex gap-6 mt-10 text-xs ">
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                ✓
+              </span>
+              HIPAA COMPLIANT
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                ✓
+              </span>
+              SOC2 CERTIFIED
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-4 h-4 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-              ✓
-            </span>
-            SOC2 CERTIFIED
-          </div>
-        </div>
         </div>
       </div>
 

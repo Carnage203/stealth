@@ -38,7 +38,7 @@ class UserSessions(BaseModel):
     }
 
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    user_id: PyObjectId   # 🔗 reference to users collection
+    user_id: PyObjectId 
 
     refresh_token_hash: str
     device: str
