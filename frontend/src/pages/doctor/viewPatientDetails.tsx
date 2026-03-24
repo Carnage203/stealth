@@ -587,7 +587,11 @@ export default function ViewPatientDetails() {
                     </TableRow>
                   ) : visits.length > 0 ? (
                     visits.map((visit) => (
-                      <TableRow key={visit.id}>
+                      <TableRow
+                        key={visit.id}
+                        className="cursor-pointer hover:bg-muted/60"
+                        onClick={() => navigate(`/doctor/patient/${id}/visit/${visit.id}`)}
+                      >
                         <TableCell className="font-medium">
                           {visit.id}
                         </TableCell>

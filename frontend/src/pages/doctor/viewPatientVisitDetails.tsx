@@ -1,601 +1,22 @@
-// import { useCallback, useEffect, useState } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// import {
-//   ArrowLeft,
-//   Calendar,
-//   User,
-//   Clock,
-//   Activity,
-//   FileText,
-//   Loader2,
-//   Play,
-//   Pause,
-//   Volume2,
-//   Printer,
-// } from "lucide-react";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Badge } from "@/components/ui/badge";
-// import { Separator } from "@/components/ui/separator";
-// import { ScrollArea } from "@/components/ui/scroll-area";
-
-// // Mock data (replace with API)
-// const mockVisitData = {
-//   patient: {
-//     id: "pat_001",
-//     name: "John Doe",
-//     age: 42,
-//     gender: "Male",
-//     phone: "+918917726364",
-//   },
-//   visit: {
-//     id: "visit_001",
-//     patientId: "pat_001",
-//     date: "2024-01-01T12:00:00",
-//     duration: "34 minutes",
-//     doctor: "Dr. Smith",
-//     transcription: [
-//       {
-//         start: 0.0,
-//         end: 4.8,
-//         sentence:
-//           "Hi John, good to see you again. How have you been feeling since we adjusted your medication last month?",
-//         speaker: "Doctor",
-//       },
-//       {
-//         start: 5.0,
-//         end: 11.2,
-//         sentence:
-//           "It's been better, honestly. The lower back pain has definitely improved.",
-//         speaker: "Patient",
-//       },
-//       {
-//         start: 11.4,
-//         end: 16.9,
-//         sentence:
-//           "I'd say the pain level is around a three out of ten most days now, compared to a seven it was before.",
-//         speaker: "Patient",
-//       },
-//       {
-//         start: 17.2,
-//         end: 21.6,
-//         sentence:
-//           "That's excellent news. Any side effects like dizziness or fatigue?",
-//         speaker: "Doctor",
-//       },
-//       {
-//         start: 22.0,
-//         end: 27.5,
-//         sentence:
-//           "No dizziness. Maybe a little tired in the afternoons, but I've also been working late, so it might just be that.",
-//         speaker: "Patient",
-//       },
-//       {
-//         start: 28.0,
-//         end: 34.2,
-//         sentence:
-//           "Blood pressure looks good, one twenty over eighty. Pulse is steady at seventy-two. Lungs sound clear.",
-//         speaker: "Doctor",
-//       },
-//     ],
-//     soap: {
-//       subjective:
-//         "Patient presents for Annual Physical. Reports significant improvement in lower back pain following recent medication adjustment. Current pain level is approximately 3/10 on most days, improved from previous 7/10. Denies dizziness. Notes mild afternoon fatigue, likely related to extended work hours.",
-//       vitals: {
-//         bp: "120/80",
-//         pulse: "72 bpm",
-//         temp: "98.4 F",
-//         resp: "16",
-//       },
-//       objective:
-//         "General: Well-developed, well-nourished male in no acute distress. Lungs: Clear to auscultation bilaterally. Cardiovascular: Regular rate and rhythm, no murmurs.",
-//       assessment: [
-//         "1. Chronic Lower Back Pain (M54.5) - Improving",
-//         "2. Essential Hypertension (I10) - Controlled",
-//       ],
-//       plan: [
-//         "Continue current medication regimen for lower back pain and hypertension.",
-//         "Follow up in 3 months for blood pressure monitoring and pain reassessment.",
-//         "Refer to Physical Therapy if pain worsens or improvement plateaus.",
-//         "Advised on sleep hygiene and work-life balance to address afternoon fatigue.",
-//       ],
-//     },
-//   },
-// };
-
-// interface Transcription {
-//   start: number;
-//   end: number;
-//   sentence: string;
-//   speaker: string;
-// }
-
-// interface Vitals {
-//   bp: string;
-//   pulse: string;
-//   temp: string;
-//   resp: string;
-// }
-
-// interface SOAP {
-//   subjective: string;
-//   vitals: Vitals;
-//   objective: string;
-//   assessment: string[];
-//   plan: string[];
-// }
-
-// interface Visit {
-//   id: string;
-//   patientId: string;
-//   date: string;
-//   duration: string;
-//   doctor: string;
-//   transcription: Transcription[];
-//   soap: SOAP;
-// }
-
-// interface Patient {
-//   id: string;
-//   name: string;
-//   age: number;
-//   gender: string;
-//   phone: string;
-// }
-
-// interface VisitData {
-//   patient: Patient;
-//   visit: Visit;
-// }
-
-// export default function ViewPatientVisitDetails() {
-//   const { patientId, visitId } = useParams();
-//   const navigate = useNavigate();
-//   const [data, setData] = useState<VisitData | null>(null);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState<string | null>(null);
-//   const [activeTranscript, setActiveTranscript] = useState<number | null>(null);
-
-//   const fetchVisitDetails = useCallback(
-//     async (patId: string | undefined, visId: string | undefined) => {
-//       setLoading(true);
-//       setError(null);
-
-//       try {
-//         // Simulate API call
-//         await new Promise((resolve) => setTimeout(resolve, 500));
-
-//         // Replace with real API:
-//         // const response = await fetch(`/api/patients/${patId}/visits/${visId}`);
-//         // if (!response.ok) throw new Error('Failed to fetch visit details');
-//         // const visitData = await response.json();
-//         // setData(visitData);
-
-//         setData(mockVisitData);
-//       } catch (err) {
-//         setError("Failed to load visit details.");
-//         console.error(err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     },
-//     []
-//   );
-
-//   useEffect(() => {
-//     fetchVisitDetails(patientId, visitId);
-//   }, [patientId, visitId, fetchVisitDetails]);
-
-//   const handleBack = () => {
-//     navigate(`/doctor/patient/${patientId}`);
-//   };
-
-//   const formatDate = (dateString: string) => {
-//     const date = new Date(dateString);
-//     return date.toLocaleDateString("en-US", {
-//       year: "numeric",
-//       month: "long",
-//       day: "numeric",
-//       hour: "2-digit",
-//       minute: "2-digit",
-//     });
-//   };
-
-//   const formatTime = (seconds: number) => {
-//     const mins = Math.floor(seconds / 60);
-//     const secs = Math.floor(seconds % 60);
-//     return `${mins}:${secs.toString().padStart(2, "0")}`;
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen p-6 flex items-center justify-center">
-//         <Loader2 className="size-8 animate-spin text-gray-400" />
-//       </div>
-//     );
-//   }
-
-//   if (error || !data) {
-//     return (
-//       <div className="min-h-screen p-6">
-//         <div className="max-w-7xl mx-auto">
-//           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-//             {error || "Visit not found"}
-//           </div>
-//           <Button onClick={handleBack} className="mt-4" variant="outline">
-//             <ArrowLeft className="size-4 mr-2" />
-//             Back to Patient
-//           </Button>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   const { patient, visit } = data;
-
-//   return (
-//     <div className="min-h-screen p-6">
-//       <div className="max-w-7xl mx-auto space-y-6">
-//         {/* Header */}
-//         <div className="flex items-center gap-4">
-//           <Button variant="ghost" size="icon" onClick={handleBack} className="h-8 w-8">
-//             <ArrowLeft className="size-4" />
-//           </Button>
-//           <div className="flex-1">
-//             <h1 className="text-3xl font-bold">Visit Details</h1>
-//             <p className=" mt-1">
-//               Complete visit information and transcription
-//             </p>
-//           </div>
-//           <Badge variant="outline" className="text-sm">
-//             Visit ID: {visit.id}
-//           </Badge>
-//         </div>
-
-//         {/* Patient & Visit Info */}
-//         <Card>
-//           <CardHeader>
-//             <CardTitle className="flex items-center gap-2">
-//               <User className="size-5" />
-//               Patient & Visit Information
-//             </CardTitle>
-//           </CardHeader>
-//           <CardContent>
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//               <div className="space-y-3">
-//                 <h3 className="text-sm font-medium ">Patient Details</h3>
-//                 <div className="space-y-2">
-//                   <div>
-//                     <p className="text-xl font-semibold">{patient.name}</p>
-//                     <div className="flex items-center gap-2 mt-1">
-//                       <Badge variant="secondary">{patient.gender}</Badge>
-//                       <Badge variant="secondary">{patient.age} years</Badge>
-//                     </div>
-//                   </div>
-//                   <p className="text-sm text-gray-600">{patient.phone}</p>
-//                 </div>
-//               </div>
-
-//               <div className="space-y-3">
-//                 <h3 className="text-sm font-medium ">Visit Details</h3>
-//                 <div className="space-y-2 text-sm">
-//                   <div className="flex items-center gap-2">
-//                     <Calendar className="size-4 text-gray-400" />
-//                     <span>{formatDate(visit.date)}</span>
-//                   </div>
-//                   <div className="flex items-center gap-2">
-//                     <Clock className="size-4 text-gray-400" />
-//                     <span>Duration: {visit.duration}</span>
-//                   </div>
-//                   <div className="flex items-center gap-2">
-//                     <Activity className="size-4 text-gray-400" />
-//                     <span>Doctor: {visit.doctor}</span>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </CardContent>
-//         </Card>
-
-//         {/* Transcription & SOAP Notes Grid */}
-//         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-//           {/* Transcription */}
-//           <Card className="lg:col-span-1">
-//             <CardHeader>
-//               <CardTitle className="flex items-center gap-2">
-//                 <Volume2 className="size-5" />
-//                 Conversation Transcription
-//               </CardTitle>
-//             </CardHeader>
-//             <CardContent>
-//               <ScrollArea className="h-[600px] pr-4 ">
-//                 <div className="space-y-4 p-6">
-//                   {visit.transcription.map((line, index) => (
-//                     <div
-//                       key={index}
-//                       className={`p-3 rounded-lg transition-colors ${
-//                         line.speaker === "Doctor"
-//                           ? "bg-blue-400 border border-blue-200"
-//                           : "bg-gray-50 border border-gray-200"
-//                       } ${
-//                         activeTranscript === index ? "ring-2 ring-blue-400" : ""
-//                       }`}
-//                       onMouseEnter={() => setActiveTranscript(index)}
-//                       onMouseLeave={() => setActiveTranscript(null)}
-//                     >
-//                       <div className="flex items-start justify-between mb-1">
-//                         <Badge
-//                           variant={
-//                             line.speaker === "Doctor" ? "default" : "secondary"
-//                           }
-//                           className="text-xs"
-//                         >
-//                           {line.speaker}
-//                         </Badge>
-//                         <span className="text-xs ">
-//                           {formatTime(line.start)} - {formatTime(line.end)}
-//                         </span>
-//                       </div>
-//                       <p className="text-sm leading-relaxed">{line.sentence}</p>
-//                     </div>
-//                   ))}
-//                 </div>
-//               </ScrollArea>
-//             </CardContent>
-//           </Card>
-
-//           {/* SOAP Notes */}
-//           <Card className="lg:col-span-1">
-//             <CardHeader>
-//               <CardTitle className="flex items-center gap-2">
-//                 <FileText className="size-5" />
-//                 SOAP Notes
-//               </CardTitle>
-//             </CardHeader>
-//             <CardContent>
-//               <ScrollArea className="h-[600px] pr-4">
-//                 <div className="space-y-6">
-//                   {/* Subjective */}
-//                   <div>
-//                     <div className="flex items-center gap-2 mb-2">
-//                       <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
-//                         S
-//                       </Badge>
-//                       <h3 className="font-semibold">Subjective</h3>
-//                     </div>
-//                     <p className="text-sm  leading-relaxed">
-//                       {visit.soap.subjective}
-//                     </p>
-//                   </div>
-
-//                   <Separator />
-
-//                   {/* Objective with Vitals */}
-//                   <div>
-//                     <div className="flex items-center gap-2 mb-2">
-//                       <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-//                         O
-//                       </Badge>
-//                       <h3 className="font-semibold">Objective</h3>
-//                     </div>
-
-//                     {/* Vitals */}
-//                     <div className="mb-3 p-3 rounded-lg border border-green-200">
-//                       <h4 className="text-sm font-medium mb-2">Vital Signs</h4>
-//                       <div className="grid grid-cols-2 gap-2 text-sm">
-//                         <div>
-//                           <span className="">BP:</span>{" "}
-//                           <span className="font-medium">{visit.soap.vitals.bp}</span>
-//                         </div>
-//                         <div>
-//                           <span className="">Pulse:</span>{" "}
-//                           <span className="font-medium">
-//                             {visit.soap.vitals.pulse}
-//                           </span>
-//                         </div>
-//                         <div>
-//                           <span className="">Temp:</span>{" "}
-//                           <span className="font-medium">
-//                             {visit.soap.vitals.temp}
-//                           </span>
-//                         </div>
-//                         <div>
-//                           <span className="">Resp:</span>{" "}
-//                           <span className="font-medium">
-//                             {visit.soap.vitals.resp}
-//                           </span>
-//                         </div>
-//                       </div>
-//                     </div>
-
-//                     <p className="text-sm  leading-relaxed">
-//                       {visit.soap.objective}
-//                     </p>
-//                   </div>
-
-//                   <Separator />
-
-//                   {/* Assessment */}
-//                   <div>
-//                     <div className="flex items-center gap-2 mb-2">
-//                       <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
-//                         A
-//                       </Badge>
-//                       <h3 className="font-semibold">Assessment</h3>
-//                     </div>
-//                     <ul className="space-y-2">
-//                       {visit.soap.assessment.map((item, index) => (
-//                         <li
-//                           key={index}
-//                           className="text-sm  leading-relaxed pl-4 border-l-2 border-yellow-300"
-//                         >
-//                           {item}
-//                         </li>
-//                       ))}
-//                     </ul>
-//                   </div>
-
-//                   <Separator />
-
-//                   {/* Plan */}
-//                   <div>
-//                     <div className="flex items-center gap-2 mb-2">
-//                       <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-//                         P
-//                       </Badge>
-//                       <h3 className="font-semibold">Plan</h3>
-//                     </div>
-//                     <ul className="space-y-2">
-//                       {visit.soap.plan.map((item, index) => (
-//                         <li
-//                           key={index}
-//                           className="text-sm  leading-relaxed pl-4 border-l-2 border-blue-300"
-//                         >
-//                           {item}
-//                         </li>
-//                       ))}
-//                     </ul>
-//                   </div>
-//                 </div>
-//               </ScrollArea>
-//             </CardContent>
-//           </Card>
-//         </div>
-
-//         {/* Action Buttons */}
-//         <div className="flex justify-end gap-3">
-//           <Button variant="outline">
-//             <FileText className="size-4 mr-2" />
-//             Export PDF
-//           </Button>
-//           <Button variant="outline">
-//             <Activity className="size-4 mr-2" />
-//             Edit Notes
-//           </Button>
-//           <Button>
-//             <Printer className="size-4 mr-2" />
-//             Print
-//           </Button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
-  Calendar,
-  User,
-  Clock,
-  Activity,
-  FileText,
-  Loader2,
-  Play,
-  Pause,
-  Volume2,
+  Copy,
+  Save,
+  Search,
+  CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 
-// Mock data (replace with API)
-const mockVisitData = {
-  patient: {
-    id: "pat_001",
-    name: "John Doe",
-    age: 42,
-    gender: "Male",
-    phone: "+918917726364",
-  },
-  visit: {
-    id: "visit_001",
-    patientId: "pat_001",
-    date: "2024-01-01T12:00:00",
-    duration: "34 minutes",
-    doctor: "Dr. Smith",
-    transcription: [
-      {
-        start: 0.0,
-        end: 4.8,
-        sentence:
-          "Hi John, good to see you again. How have you been feeling since we adjusted your medication last month?",
-        speaker: "Doctor",
-      },
-      {
-        start: 5.0,
-        end: 11.2,
-        sentence:
-          "It's been better, honestly. The lower back pain has definitely improved.",
-        speaker: "Patient",
-      },
-      {
-        start: 11.4,
-        end: 16.9,
-        sentence:
-          "I'd say the pain level is around a three out of ten most days now, compared to a seven it was before.",
-        speaker: "Patient",
-      },
-      {
-        start: 17.2,
-        end: 21.6,
-        sentence:
-          "That's excellent news. Any side effects like dizziness or fatigue?",
-        speaker: "Doctor",
-      },
-      {
-        start: 22.0,
-        end: 27.5,
-        sentence:
-          "No dizziness. Maybe a little tired in the afternoons, but I've also been working late, so it might just be that.",
-        speaker: "Patient",
-      },
-      {
-        start: 28.0,
-        end: 34.2,
-        sentence:
-          "Blood pressure looks good, one twenty over eighty. Pulse is steady at seventy-two. Lungs sound clear.",
-        speaker: "Doctor",
-      },
-    ],
-    soap: {
-      subjective:
-        "Patient presents for Annual Physical. Reports significant improvement in lower back pain following recent medication adjustment. Current pain level is approximately 3/10 on most days, improved from previous 7/10. Denies dizziness. Notes mild afternoon fatigue, likely related to extended work hours.",
-      vitals: {
-        bp: "120/80",
-        pulse: "72 bpm",
-        temp: "98.4 F",
-        resp: "16",
-      },
-      objective:
-        "General: Well-developed, well-nourished male in no acute distress. Lungs: Clear to auscultation bilaterally. Cardiovascular: Regular rate and rhythm, no murmurs.",
-      assessment: [
-        "1. Chronic Lower Back Pain (M54.5) - Improving",
-        "2. Essential Hypertension (I10) - Controlled",
-      ],
-      plan: [
-        "Continue current medication regimen for lower back pain and hypertension.",
-        "Follow up in 3 months for blood pressure monitoring and pain reassessment.",
-        "Refer to Physical Therapy if pain worsens or improvement plateaus.",
-        "Advised on sleep hygiene and work-life balance to address afternoon fatigue.",
-      ],
-    },
-  },
-};
-
-interface Transcription {
+interface TranscriptionSegment {
   start: number;
   end: number;
   sentence: string;
-  speaker: string;
+  speaker: string[];
 }
 
 interface Vitals {
@@ -605,7 +26,7 @@ interface Vitals {
   resp: string;
 }
 
-interface SOAP {
+interface SoapNotes {
   subjective: string;
   vitals: Vitals;
   objective: string;
@@ -613,17 +34,15 @@ interface SOAP {
   plan: string[];
 }
 
-interface Visit {
+interface VisitData {
   id: string;
   patientId: string;
   date: string;
-  duration: string;
-  doctor: string;
-  transcription: Transcription[];
-  soap: SOAP;
+  notes: SoapNotes;
+  transcription: TranscriptionSegment[];
 }
 
-interface Patient {
+interface PatientData {
   id: string;
   name: string;
   age: number;
@@ -631,326 +50,386 @@ interface Patient {
   phone: string;
 }
 
-interface VisitData {
-  patient: Patient;
-  visit: Visit;
-}
-
 export default function ViewPatientVisitDetails() {
-  const { patientId, visitId } = useParams();
+  const { id: patientId, visitId } = useParams<{ id: string; visitId: string }>();
   const navigate = useNavigate();
-  const [data, setData] = useState<VisitData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [activeTranscript, setActiveTranscript] = useState<number | null>(null);
+  const SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 
-  const fetchVisitDetails = useCallback(
-    async (patId: string | undefined, visId: string | undefined) => {
+  const [visit, setVisit] = useState<VisitData | null>(null);
+  const [patient, setPatient] = useState<PatientData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showAiBanner, setShowAiBanner] = useState(true);
+
+  useEffect(() => {
+    if (!visitId || !patientId) return;
+
+    const fetchData = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        const visitRes = await fetch(`${SERVER_URL}/visits/${visitId}`, {
+          credentials: "include",
+        });
+        if (!visitRes.ok) throw new Error("Failed to fetch visit");
+        const visitData: VisitData = await visitRes.json();
+        setVisit(visitData);
 
-        // Replace with real API:
-        // const response = await fetch(`/api/patients/${patId}/visits/${visId}`);
-        // if (!response.ok) throw new Error('Failed to fetch visit details');
-        // const visitData = await response.json();
-        // setData(visitData);
-
-        setData(mockVisitData);
-      } catch (err) {
+        // Use patientId from the visit response — not the URL param (which may be mock data)
+        const patientRes = await fetch(
+          `${SERVER_URL}/patients/${visitData.patientId}`,
+          { credentials: "include" }
+        );
+        if (patientRes.ok) {
+          const patientData = await patientRes.json();
+          setPatient(patientData.patient);
+        }
+      } catch {
         setError("Failed to load visit details.");
-        console.error(err);
       } finally {
         setLoading(false);
       }
-    },
-    []
-  );
+    };
 
-  useEffect(() => {
-    fetchVisitDetails(patientId, visitId);
-  }, [patientId, visitId, fetchVisitDetails]);
-
-  const handleBack = () => {
-    navigate(-1);
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+    fetchData();
+  }, [visitId, patientId, SERVER_URL]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
+
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+
+  const isDoctor = (speaker: string[]) => {
+    const s = (speaker[0] ?? "").toLowerCase();
+    return s === "doctor" || s.includes("doctor") || s === "speaker_0";
+  };
+
+  const getSpeakerLabel = (speaker: string[]) =>
+    isDoctor(speaker) ? "DR" : "PT";
+
+  const parseAssessmentStatus = (item: string) => {
+    const idx = item.lastIndexOf(" - ");
+    if (idx !== -1) {
+      return { diagnosis: item.slice(0, idx), status: item.slice(idx + 3) };
+    }
+    return { diagnosis: item, status: null };
+  };
+
+  const getStatusColor = (status: string) => {
+    const s = status.toLowerCase().replace(/\.$/, "");
+    if (s === "improving") return "text-green-500";
+    if (s === "controlled" || s === "stable") return "text-blue-500";
+    if (s === "acute" || s === "active") return "text-orange-500";
+    return "text-gray-500";
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen p-6 flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-gray-400" />
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
       </div>
     );
   }
 
-  if (error || !data) {
+  if (error || !visit) {
     return (
-      <div className="min-h-screen p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {error || "Visit not found"}
-          </div>
-          <Button onClick={handleBack} className="mt-4" variant="outline">
-            <ArrowLeft className="size-4 mr-2" />
-            Back to Patient
-          </Button>
-        </div>
+      <div className="p-6">
+        <p className="text-red-500">{error ?? "Visit not found"}</p>
+        <Button variant="outline" className="mt-4" onClick={() => navigate(-1)}>
+          <ArrowLeft className="size-4 mr-2" /> Back
+        </Button>
       </div>
     );
   }
-
-  const { patient, visit } = data;
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
+    <div className="-m-6 flex flex-col" style={{ height: "100vh" }}>
+      {/* ── Patient Header ── */}
+      <div className="bg-white border-b dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleBack} className="h-8 w-8">
-            <ArrowLeft className="size-4" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold">Visit Details</h1>
-            <p className="text-gray-500 mt-1">
-              Complete visit information and transcription
-            </p>
+          {/* Avatar */}
+          <div className="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
+            {patient ? getInitials(patient.name) : "??"}
           </div>
-          <Badge variant="outline" className="text-sm">
-            Visit ID: {visit.id}
-          </Badge>
+          <div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate(-1)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <ArrowLeft className="size-4" />
+              </button>
+              <h1 className="text-xl font-bold dark:text-white">
+                {patient?.name ?? "Patient"}
+              </h1>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white">
+                Active
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
+              {patient && (
+                <>
+                  <span>🗓 {patient.age}y</span>
+                  <span>•</span>
+                </>
+              )}
+              <span>🪪 ID: #{visit.patientId.slice(-6).toUpperCase()}</span>
+              <span>•</span>
+              <span>📋 Visit: {formatDate(visit.date)}</span>
+            </div>
+          </div>
         </div>
 
-        {/* Patient & Visit Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="size-5" />
-              Patient & Visit Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500">Patient Details</h3>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-xl font-semibold">{patient.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary">{patient.gender}</Badge>
-                      <Badge variant="secondary">{patient.age} years</Badge>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8">
+            <Copy className="size-3.5" /> Copy Note
+          </Button>
+          <Button
+            size="sm"
+            className="gap-1.5 text-xs h-8 bg-blue-600 hover:bg-blue-700"
+          >
+            <Save className="size-3.5" /> Submit for Billing
+          </Button>
+        </div>
+      </div>
+
+      {/* ── Two-panel body ── */}
+      <div className="flex flex-1 min-h-0">
+        {/* ════ LEFT: TRANSCRIPT ════ */}
+        <div className="w-1/2 border-r dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900">
+          {/* Panel header */}
+          <div className="flex items-center justify-between px-5 py-3 border-b dark:border-slate-800 shrink-0">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 text-lg leading-none">≡</span>
+              <span className="text-xs font-semibold tracking-widest text-gray-500 dark:text-slate-400 uppercase">
+                Transcript
+              </span>
+            </div>
+            <span className="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400">
+              <CheckCircle2 className="size-3.5" />
+              Session complete
+            </span>
+          </div>
+
+          {/* Messages */}
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="px-5 py-4 space-y-4">
+              {visit.transcription.map((seg, idx) => {
+                const doc = isDoctor(seg.speaker);
+                return (
+                  <div key={idx} className="flex items-start gap-3">
+                    {/* Avatar + timestamp */}
+                    <div className="flex flex-col items-center gap-1 shrink-0 pt-0.5">
+                      <span className="text-[11px] font-mono text-teal-500 dark:text-teal-400">
+                        {formatTime(seg.start)}
+                      </span>
+                      <div
+                        className={`size-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                          doc
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-teal-100 text-teal-800"
+                        }`}
+                      >
+                        {getSpeakerLabel(seg.speaker)}
+                      </div>
+                    </div>
+                    {/* Bubble */}
+                    <div className="flex-1 bg-gray-50 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-slate-200 leading-relaxed border border-gray-100 dark:border-slate-700">
+                      {seg.sentence}
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600">{patient.phone}</p>
-                </div>
-              </div>
+                );
+              })}
 
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500">Visit Details</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="size-4 text-gray-400" />
-                    <span>{formatDate(visit.date)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="size-4 text-gray-400" />
-                    <span>Duration: {visit.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Activity className="size-4 text-gray-400" />
-                    <span>Doctor: {visit.doctor}</span>
-                  </div>
-                </div>
+              {/* End of conversation */}
+              <div className="flex items-center justify-center gap-2 pt-4 pb-2 text-xs text-gray-400 dark:text-slate-500">
+                <CheckCircle2 className="size-4" />
+                <span>End of conversation fetched from archive</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </ScrollArea>
 
-        {/* Transcription & SOAP Notes Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Transcription */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Volume2 className="size-5" />
-                Conversation Transcription
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[600px] pr-4">
-                <div className="space-y-4">
-                  {visit.transcription.map((line, index) => (
+          {/* Bottom search */}
+          <div className="px-5 py-3 border-t dark:border-slate-800 shrink-0">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-gray-400" />
+              <Input
+                placeholder="Search in transcript..."
+                className="pl-8 h-8 text-xs bg-gray-50 dark:bg-slate-800"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ════ RIGHT: SOAP NOTES ════ */}
+        <div className="w-1/2 flex flex-col bg-gray-50 dark:bg-slate-950">
+          {/* AI draft banner */}
+          {showAiBanner && (
+            <div className="flex items-center justify-between px-5 py-2.5 bg-blue-50 dark:bg-blue-950/40 border-b border-blue-100 dark:border-blue-900 shrink-0">
+              <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
+                <Sparkles className="size-3.5 text-blue-500 shrink-0" />
+                AI Draft generated from clinical transcript. Review and edit as
+                needed.
+              </div>
+              <div className="flex items-center gap-3 text-xs shrink-0 ml-3">
+                <button className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                  Regenerate
+                </button>
+                <button
+                  className="text-gray-400 hover:underline"
+                  onClick={() => setShowAiBanner(false)}
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="px-5 py-4 space-y-3">
+              {/* ── SUBJECTIVE ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
+                      S
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Subjective
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                </div>
+                <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
+                  {visit.notes.subjective}
+                </p>
+              </div>
+
+              {/* ── OBJECTIVE ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                      O
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Objective
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                </div>
+                {/* Vitals grid */}
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {(
+                    [
+                      { label: "BP", value: visit.notes.vitals.bp },
+                      { label: "PULSE", value: visit.notes.vitals.pulse },
+                      { label: "TEMP", value: visit.notes.vitals.temp },
+                      { label: "RESP", value: visit.notes.vitals.resp },
+                    ] as const
+                  ).map(({ label, value }) => (
                     <div
-                      key={index}
-                      className={`p-3 rounded-lg transition-colors ${
-                        line.speaker === "Doctor"
-                          ? "bg-blue-500 border border-blue-200"
-                          : "bg-gray-500 border border-gray-200"
-                      } ${
-                        activeTranscript === index ? "ring-2 ring-blue-400" : ""
-                      }`}
-                      onMouseEnter={() => setActiveTranscript(index)}
-                      onMouseLeave={() => setActiveTranscript(null)}
+                      key={label}
+                      className="text-center bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-2.5 px-2"
                     >
-                      <div className="flex items-start justify-between mb-1">
-                        <Badge
-                          variant={
-                            line.speaker === "Doctor" ? "default" : "secondary"
-                          }
-                          className="text-xs"
-                        >
-                          {line.speaker}
-                        </Badge>
-                        <span className="text-xs text-gray-500">
-                          {formatTime(line.start)} - {formatTime(line.end)}
-                        </span>
-                      </div>
-                      <p className="text-sm leading-relaxed">{line.sentence}</p>
+                      <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wider">
+                        {label}
+                      </p>
+                      <p className="text-sm font-semibold text-gray-800 dark:text-slate-200 mt-0.5">
+                        {value}
+                      </p>
                     </div>
                   ))}
                 </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
+                <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
+                  {visit.notes.objective}
+                </p>
+              </div>
 
-          {/* SOAP Notes */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="size-5" />
-                SOAP Notes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[600px] pr-4">
-                <div className="space-y-6">
-                  {/* Subjective */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
-                        S
-                      </Badge>
-                      <h3 className="font-semibold">Subjective</h3>
-                    </div>
-                    <p className="text-sm text-gray-700 leading-relaxed">
-                      {visit.soap.subjective}
-                    </p>
+              {/* ── ASSESSMENT ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                      A
+                    </span>
                   </div>
-
-                  <Separator />
-
-                  {/* Objective with Vitals */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-                        O
-                      </Badge>
-                      <h3 className="font-semibold">Objective</h3>
-                    </div>
-
-                    {/* Vitals */}
-                    <div className="mb-3 p-3 bg-green-300 rounded-lg border border-green-200">
-                      <h4 className="text-sm font-medium mb-2">Vital Signs</h4>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div>
-                          <span className="text-gray-600">BP:</span>{" "}
-                          <span className="font-medium">{visit.soap.vitals.bp}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Pulse:</span>{" "}
-                          <span className="font-medium">
-                            {visit.soap.vitals.pulse}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Temp:</span>{" "}
-                          <span className="font-medium">
-                            {visit.soap.vitals.temp}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Resp:</span>{" "}
-                          <span className="font-medium">
-                            {visit.soap.vitals.resp}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className="text-sm text-gray-700 leading-relaxed">
-                      {visit.soap.objective}
-                    </p>
-                  </div>
-
-                  <Separator />
-
-                  {/* Assessment */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
-                        A
-                      </Badge>
-                      <h3 className="font-semibold">Assessment</h3>
-                    </div>
-                    <ul className="space-y-2">
-                      {visit.soap.assessment.map((item, index) => (
-                        <li
-                          key={index}
-                          className="text-sm text-gray-700 leading-relaxed pl-4 border-l-2 border-yellow-300"
-                        >
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <Separator />
-
-                  {/* Plan */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-                        P
-                      </Badge>
-                      <h3 className="font-semibold">Plan</h3>
-                    </div>
-                    <ul className="space-y-2">
-                      {visit.soap.plan.map((item, index) => (
-                        <li
-                          key={index}
-                          className="text-sm text-gray-700 leading-relaxed pl-4 border-l-2 border-blue-300"
-                        >
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Assessment
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
+                <ul className="space-y-2">
+                  {visit.notes.assessment.map((item, idx) => {
+                    const { diagnosis, status } = parseAssessmentStatus(item);
+                    return (
+                      <li key={idx} className="text-sm">
+                        <span className="font-medium text-gray-800 dark:text-slate-200">
+                          {diagnosis}
+                        </span>
+                        {status && (
+                          <>
+                            <span className="text-gray-400"> - </span>
+                            <span
+                              className={`font-semibold ${getStatusColor(status)}`}
+                            >
+                              {status}
+                            </span>
+                          </>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              {/* ── PLAN ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                      P
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Plan
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                </div>
+                <ul className="space-y-2">
+                  {visit.notes.plan.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className={`text-sm leading-relaxed ${
+                        idx === 0
+                          ? "text-blue-600 dark:text-blue-400 font-medium"
+                          : "text-gray-700 dark:text-slate-300"
+                      }`}
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </ScrollArea>
         </div>
-
-
       </div>
     </div>
   );
