@@ -56,6 +56,25 @@ class CompleteProfileRequest(BaseModel):
     doctor: Doctor
     token : str
 
+class SoapVitals(BaseModel):
+    bp: str = Field(default="Not recorded", description="Blood pressure (e.g. '120/80')")
+    pulse: str = Field(default="Not recorded", description="Heart rate (e.g. '72 bpm')")
+    temp: str = Field(default="Not recorded", description="Temperature (e.g. '98.4 F')")
+    resp: str = Field(default="Not recorded", description="Respiratory rate (e.g. '16')")
+
+class LLMSoapSchema(BaseModel):
+    subjective: str = Field(..., description="Narrative summary of patient complaints and history")
+    vitals: SoapVitals
+    objective: str = Field(..., description="Physical exam findings excluding vitals")
+    assessment: List[str] = Field(..., description="Diagnoses with ICD-10 codes and status")
+    plan: List[str] = Field(..., description="Treatment plan including medications, referrals, follow-up")
+
+class TranscriptionSegment(BaseModel):
+    start: float = Field(..., description="Segment start time in seconds")
+    end: float = Field(..., description="Segment end time in seconds")
+    sentence: str = Field(..., description="Transcribed sentence text")
+    speaker: List[str] = Field(default_factory=list, description="List of speaker IDs in this segment")
+
 class VisitUpdate(BaseModel):
     transcript: Dict[str, str]
 
@@ -67,8 +86,8 @@ class VisitResponse(BaseModel):
     id: str
     patientId: str
     date: datetime
-    notes: list[str]
-    transcription: list[str]
+    notes: LLMSoapSchema
+    transcription: List[TranscriptionSegment]
 
 class PatientWithVisitsResponse(BaseModel):
     patient: PatientResponse
