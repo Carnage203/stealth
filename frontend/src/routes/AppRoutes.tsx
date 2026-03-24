@@ -64,7 +64,7 @@ export default function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="patients" element={<Patients />} />
         <Route path="patient/:id" element={<ViewPatientDetails />} />
-        <Route path="patient/:id/visit-details" element={<ViewPatientVisitDetails />} />
+        <Route path="patient/:id/visit/:visitId" element={<ViewPatientVisitDetails />} />
         <Route path="profile" element={<Profile />} />
         <Route path="consultations" element={<RecordingConsultationCard />} />
       </Route>
