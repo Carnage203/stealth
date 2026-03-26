@@ -1,12 +1,12 @@
-import { useAuth } from '@/context/AuthContext'
-import PatientDetailsModal from '@/components/PatientDetailsModal'
-import { useState } from 'react'
-import NewConsultationCard from '@/components/audioRecorder/NewConsultationCard'
-import { Button } from '@/components/ui/button'
+import { useAuth } from "@/context/AuthContext";
+import PatientDetailsModal from "@/components/PatientDetailsModal";
+import { useState } from "react";
+import NewConsultationCard from "@/components/audioRecorder/NewConsultationCard";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
-  const { user } = useAuth()
-const [open, setOpen] = useState(false)
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="min-h-screen p-6">
@@ -14,7 +14,7 @@ const [open, setOpen] = useState(false)
         {/* Header */}
         <div className="rounded-lg shadow p-6 mb-6">
           <h1 className="text-3xl font-bold ">
-            Welcome, Dr. {user?.name || 'User'}
+            Welcome, Dr. {user?.name || "User"}
           </h1>
           <p className=" mt-2">{user?.email}</p>
         </div>
@@ -33,8 +33,8 @@ const [open, setOpen] = useState(false)
             <h3 className=" text-sm font-medium">Pending Reports</h3>
             <p className="text-3xl font-bold  mt-2">0</p>
           </div>
-         <Button onClick={() => setOpen(true)}>New Consultation</Button>
-         <PatientDetailsModal open={open} onClose={() => setOpen(false)} />
+          <Button onClick={() => setOpen(true)}>New Consultation</Button>
+          <PatientDetailsModal open={open} onClose={() => setOpen(false)} />
         </div>
 
         {/* Recent Activity */}
@@ -44,5 +44,5 @@ const [open, setOpen] = useState(false)
         </div>
       </div>
     </div>
-  )
+  );
 }

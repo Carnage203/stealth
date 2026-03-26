@@ -178,7 +178,7 @@ export default function ViewPatientVisitDetails() {
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -237,7 +237,12 @@ export default function ViewPatientVisitDetails() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleBack} className="h-8 w-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBack}
+            className="h-8 w-8"
+          >
             <ArrowLeft className="size-4" />
           </Button>
           <div className="flex-1">
@@ -262,7 +267,9 @@ export default function ViewPatientVisitDetails() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500">Patient Details</h3>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Patient Details
+                </h3>
                 <div className="space-y-2">
                   <div>
                     <p className="text-xl font-semibold">{patient.name}</p>
@@ -276,7 +283,9 @@ export default function ViewPatientVisitDetails() {
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500">Visit Details</h3>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Visit Details
+                </h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <Calendar className="size-4 text-gray-400" />
@@ -384,7 +393,9 @@ export default function ViewPatientVisitDetails() {
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
                           <span className="text-gray-600">BP:</span>{" "}
-                          <span className="font-medium">{visit.soap.vitals.bp}</span>
+                          <span className="font-medium">
+                            {visit.soap.vitals.bp}
+                          </span>
                         </div>
                         <div>
                           <span className="text-gray-600">Pulse:</span>{" "}
@@ -460,8 +471,6 @@ export default function ViewPatientVisitDetails() {
             </CardContent>
           </Card>
         </div>
-
-
       </div>
     </div>
   );

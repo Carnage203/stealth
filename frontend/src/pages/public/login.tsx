@@ -9,6 +9,11 @@ import {
   EyeOff,
   Hospital,
   ShieldCheck,
+  ArrowRight,
+  FileText,
+  CreditCard,
+  Share2,
+  Book,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -162,45 +167,79 @@ export default function Login() {
       </div>
 
       {/* RIGHT COLUMN — BRANDING (NEW STRUCTURE, SAME TEXT) */}
-      <div className="font-serif hidden lg:flex flex-col justify-center px-14 bg-gradient-to-b from-blue-50 to-blue-200">
-        <h3 className="text-gray-900 mb-6 text-4xl font-bold leading-tight text-center ">
-          Designed for doctors, <br />
-          powered by intelligence.
-        </h3>
 
-        <p className="text-gray-900 mx-auto mb-12 max-w-xl text-center text-xl opacity-90">
-          Spend more time with patients and less time on paperwork. Join 5,000+
-          independent clinics today.
-        </p>
+       <div className="hidden lg:flex flex-col justify-center px-14 bg-gradient-to-b from-blue-50 to-blue-200">
+        <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.15em] text-teal-700 bg-white px-5 py-1.5 rounded-full shadow-sm w-fit mb-6">
+          <span className="w-2 h-2 rounded-full bg-teal-600"></span>
+          EMPOWERING INDEPENDENT CARE
+        </span>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-6 max-w-xl mx-auto text-gray-900 ">
-          <div className="rounded-xl border border-green-800 p-6 text-center shadow-sm hover:bg-green-100 transition-colors">
-            <p className="text-3xl font-bold">98%</p>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-widest">
-              Accuracy Rate
-            </p>
-          </div>
+        <h2 className="text-4xl font-semibold text-gray-900 leading-tight mb-10">
+          Focus on patients,
+          <span className="block text-blue-600 italic font-serif">
+            not paperwork.
+          </span>
+        </h2>
 
-          <div className="rounded-xl border border-green-800 p-6 text-center shadow-sm hover:bg-green-100 transition-colors">
-            <p className="text-3xl font-bold">2hrs</p>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-widest">
-              Daily Savings
-            </p>
-          </div>
+        {/* Feature Cards */}
+        <div className="space-y-6 max-w-lg">
+          <FeatureCard
+            icon={<FileText className="w-5 h-5" />}
+            title="AI-Generated SOAP Notes"
+            description="Reduce documentation time by up to 60%. Our AI drafts comprehensive notes from your patient sessions in seconds."
+            bg="bg-blue-100"
+            iconColor="text-blue-600"
+          />
 
-          <div className="rounded-xl border border-green-800 p-6 text-center shadow-sm hover:bg-green-100 transition-colors">
-            <p className="text-3xl font-bold ">100%</p>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-widest ">
-              Data Security
-            </p>
-          </div>
+          <FeatureCard
+            icon={<CreditCard className="w-5 h-5" />}
+            title="Intelligent Billing Suggestions"
+            description="Minimize claim denials with real-time coding suggestions tailored to your clinical documentation."
+            bg="bg-emerald-100"
+            iconColor="text-emerald-600"
+          />
+
+          <FeatureCard
+            icon={<Share2 className="w-5 h-5" />}
+            title="Universal Exports"
+            description="Seamlessly export your data to PDF or Google Docs. Maintain total control and portability of your patient records."
+            bg="bg-gray-100"
+            iconColor="text-gray-700"
+          />
         </div>
 
-        <p className="mt-12 text-center text-sm text-slate-500">
-          Trusted by <span className="font-semibold">5,000+</span> clinics
-          worldwide
+        {/* Footer */}
+        <p className="text-sm text-gray-500 mt-12">
+          Join <span className="font-medium">2,000+</span> clinicians
         </p>
+      </div>
+    </div>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+  bg,
+  iconColor,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  bg: string;
+  iconColor: string;
+}) {
+  return (
+    <div className="bg-white rounded-xl shadow-sm p-5 flex gap-4">
+      <div
+        className={`w-10 h-10 rounded-lg flex items-center justify-center ${bg} ${iconColor}`}
+      >
+        {icon}
+      </div>
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+        <p className="text-sm text-gray-500">{description}</p>
       </div>
     </div>
   );

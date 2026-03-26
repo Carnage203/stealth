@@ -1,7 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { matchPath } from "react-router-dom";
-
 import {
   LayoutDashboard,
   Users,
@@ -25,6 +24,8 @@ const menuItems = [
 ];
 
 export const DoctorLayout = () => {
+  const App_NAME = import.meta.env.VITE_APP_NAME || "ClinicAI";
+
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -35,14 +36,14 @@ export const DoctorLayout = () => {
   // const isActive = (path: string) =>
   //   !!matchPath({ path, end: path === "/doctor" }, location.pathname);
 
-  // Test -2 
+  // Test -2
   //   const isActive = (path: string) => {
   //   if (path === "/doctor") {
   //     return location.pathname === "/doctor";
   //   }
   //   return location.pathname.startsWith(path);
   // };
-  
+
   // Test -3
   const isActive = (path: string) => location.pathname === path;
 
@@ -51,39 +52,66 @@ export const DoctorLayout = () => {
     navigate("/login");
   };
 
-  const sidebarWidth = collapsed ? "w-20" : "w-64";
-
-  // const width = mobile ? "w-64" : collapsed ? "w-20" : "w-64";
+  const sidebarWidth = collapsed ? "w-18" : "w-72";
 
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
     <aside
       className={`
-        ${sidebarWidth}
-        bg-slate-900 text-white flex flex-col
+        ${sidebarWidth} bg-white
+        flex flex-col border-2
         ${mobile ? "h-full" : "fixed inset-y-0 left-0"}
         transition-all duration-300
       `}
     >
       {/* Header */}
-      <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+      {/* <div className="p-4 border-b border-slate-800 flex items-center justify-between">
         <Link to="/doctor" className="flex items-center gap-2">
           <Hospital className="size-8 text-blue-500" />
           {!collapsed && (
-            <span className="font-semibold text-blue-400">ClinicAI</span>
+            <span className="font-semibold text-blue-400">{App_NAME}</span>
           )}
         </Link>
 
         {!mobile && (
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="text-slate-400 hover:text-white"
+            className="text-black hover:bg-gray-50 rounded-2xl p-1 rounded transition-transform"
           >
             <ChevronLeft
               className={`hover:cursor-pointer transition-transform ${collapsed && "rotate-180"}`}
             />
           </button>
         )}
+      </div> */}
+      <div
+        className={`p-4 border-b border-slate-800 flex items-center ${
+          collapsed && !mobile ? "justify-center" : "justify-between"
+        }`}
+      >
+        {!(collapsed && !mobile) && (
+          <Link to="/doctor" className="flex items-center gap-2">
+            <Hospital className="size-8 text-blue-500" />
+            {!collapsed && (
+              <span className="font-semibold text-blue-400">{App_NAME}</span>
+            )}
+          </Link>
+        )}
+
+        {!mobile && (
+          <button
+            type="button"
+            onClick={() => setCollapsed((prev) => !prev)}
+            className="text-black hover:bg-gray-50 rounded-2xl p-1 transition-transform"
+          >
+            <ChevronLeft
+              className={`hover:cursor-pointer transition-transform ${
+                collapsed ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+        )}
       </div>
+
 
       {/* Nav */}
       <nav className="flex-1 p-3 space-y-1">
@@ -97,16 +125,22 @@ export const DoctorLayout = () => {
               className={`
                 group flex items-center gap-3 px-3 py-2.5 rounded-lg
                 transition-all relative
-                ${
-                  isActive(item.path)
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }
+                ${isActive(item.path) ? "bg-[#eef4ff]" : "hover:bg-gray-50"}
               `}
             >
-              <Icon className="size-5 shrink-0" />
-
-              {!collapsed && <span>{item.name}</span>}
+              <Icon
+                size={20}
+                className={
+                  isActive(item.path) ? "text-[#137fec]" : "text-[#617589]"
+                }
+              />
+              {!collapsed && (
+                <span
+                  className={`text-sm font-semibold ${isActive(item.path) ? "text-[#137fec]" : "text-[#111418]"}`}
+                >
+                  {item.name}
+                </span>
+              )}
 
               {/* Tooltip when collapsed */}
               {collapsed && (
@@ -121,11 +155,11 @@ export const DoctorLayout = () => {
 
       {/* Footer */}
       <div className="p-3 border-t border-slate-800 space-y-2">
-        <AnimatedThemeToggler />
+        {/* <AnimatedThemeToggler /> */}
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-slate-300 hover:bg-red-500/10 hover:text-red-400"
+          className="flex items-center gap-3 w-full px-3 hover:cursor-pointer py-2.5 rounded-lg text-black hover:bg-red-500/10 hover:text-red-600"
         >
           <LogOut className="size-5" />
           {!collapsed && "Logout"}
@@ -135,13 +169,13 @@ export const DoctorLayout = () => {
   );
 
   return (
-    <div className="h-screen bg-slate-100 dark:bg-slate-950 overflow-hidden">
+    <div className="min-h-screen bg-[#f6f7f8] dark:bg-slate-950 overflow-hidden">
       {/* Mobile top bar */}
       <div className="md:hidden flex items-center p-3 border-b dark:border-slate-800 bg-slate-900 text-white">
         <button onClick={() => setMobileOpen(true)}>
           <Menu />
         </button>
-        <span className="ml-3 font-semibold">ClinicAI</span>
+        <span className="ml-3 font-semibold">{App_NAME}</span>
       </div>
 
       {/* Desktop Sidebar */}
