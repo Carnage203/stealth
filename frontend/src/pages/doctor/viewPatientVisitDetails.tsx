@@ -355,16 +355,14 @@ export default function ViewPatientVisitDetails() {
             <div className="px-5 py-4 space-y-3">
               {/* ── SUBJECTIVE ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center mb-4">
-                  <div className="size-6 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
-                      S
-                    </span>
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="size-6 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400">S</span>
+                    </div>
+                    <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Subjective</span>
                   </div>
-                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
-                    Subjective
-                  </span>
-                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700 ml-3" />
+                  <div className="h-px bg-gray-200 dark:bg-slate-700" />
                 </div>
                 <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
                   {visit.notes.subjective}
@@ -373,16 +371,14 @@ export default function ViewPatientVisitDetails() {
 
               {/* ── OBJECTIVE ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center mb-4">
-                  <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                      O
-                    </span>
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400">O</span>
+                    </div>
+                    <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Objective</span>
                   </div>
-                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
-                    Objective
-                  </span>
-                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700 ml-3" />
+                  <div className="h-px bg-gray-200 dark:bg-slate-700" />
                 </div>
                 {/* Vitals grid */}
                 <div className="grid grid-cols-4 gap-2 mb-4">
@@ -414,16 +410,14 @@ export default function ViewPatientVisitDetails() {
 
               {/* ── ASSESSMENT ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center mb-4">
-                  <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
-                      A
-                    </span>
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-amber-600 dark:text-amber-400">A</span>
+                    </div>
+                    <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Assessment</span>
                   </div>
-                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
-                    Assessment
-                  </span>
-                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700 ml-3" />
+                  <div className="h-px bg-gray-200 dark:bg-slate-700" />
                 </div>
                 <ul className="space-y-2 list-disc pl-5">
                   {visit.notes.assessment.map((item, idx) => {
@@ -451,16 +445,14 @@ export default function ViewPatientVisitDetails() {
 
               {/* ── PLAN ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center mb-4">
-                  <div className="size-6 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                      P
-                    </span>
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="size-6 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-green-600 dark:text-green-400">P</span>
+                    </div>
+                    <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Plan</span>
                   </div>
-                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
-                    Plan
-                  </span>
-                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700 ml-3" />
+                  <div className="h-px bg-gray-200 dark:bg-slate-700" />
                 </div>
                 <ul className="space-y-2 list-disc pl-5">
                   {visit.notes.plan.map((item, idx) => (
