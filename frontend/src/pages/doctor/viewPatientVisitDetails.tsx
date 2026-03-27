@@ -60,6 +60,32 @@ export default function ViewPatientVisitDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAiBanner, setShowAiBanner] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [search, setSearch] = useState("");
+  const handleCopyNote = async () => {
+    if (!visit) return;
+
+    const soapJson = {
+      patientId: visit.patientId,
+      visitId: visit.id,
+      date: visit.date,
+      notes: visit.notes,
+    };
+
+    try {
+      await navigator.clipboard.writeText(
+        JSON.stringify(soapJson, null, 2)
+      );
+
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (err) {
+      console.error("Copy failed", err);
+    }
+  };
 
   useEffect(() => {
     if (!visitId || !patientId) return;
@@ -197,9 +223,22 @@ export default function ViewPatientVisitDetails() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8">
-            <Copy className="size-3.5" /> Copy Note
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs h-8"
+            onClick={handleCopyNote}
+          >
+            {copied ? (
+              "Copied!"
+            ) : (
+              <>
+                <Copy className="size-3.5" />
+                Copy Note
+              </>
+            )}
           </Button>
+
           <Button
             size="sm"
             className="gap-1.5 text-xs h-8 bg-blue-600 hover:bg-blue-700"
@@ -240,18 +279,27 @@ export default function ViewPatientVisitDetails() {
                         {formatTime(seg.start)}
                       </span>
                       <div
-                        className={`size-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                          doc
+                        className={`size-7 rounded-full flex items-center justify-center text-[10px] font-bold ${doc
                             ? "bg-blue-100 text-blue-800"
                             : "bg-teal-100 text-teal-800"
-                        }`}
+                          }`}
                       >
                         {getSpeakerLabel(seg.speaker)}
                       </div>
                     </div>
                     {/* Bubble */}
-                    <div className="flex-1 bg-gray-50 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-slate-200 leading-relaxed border border-gray-100 dark:border-slate-700">
-                      {seg.sentence}
+                    <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-slate-200 leading-relaxed border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition">
+                      {search
+                        ? seg.sentence.split(new RegExp(`(${search})`, "gi")).map((part, i) =>
+                          part.toLowerCase() === search.toLowerCase() ? (
+                            <span key={i} className="bg-blue-200 text-blue-900 px-1 rounded">
+                              {part}
+                            </span>
+                          ) : (
+                            part
+                          )
+                        )
+                        : seg.sentence}
                     </div>
                   </div>
                 );
@@ -272,6 +320,8 @@ export default function ViewPatientVisitDetails() {
               <Input
                 placeholder="Search in transcript..."
                 className="pl-8 h-8 text-xs bg-gray-50 dark:bg-slate-800"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
@@ -305,7 +355,7 @@ export default function ViewPatientVisitDetails() {
             <div className="px-5 py-4 space-y-3">
               {/* ── SUBJECTIVE ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center mb-4">
                   <div className="size-6 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
                     <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
                       S
@@ -314,7 +364,7 @@ export default function ViewPatientVisitDetails() {
                   <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
                     Subjective
                   </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700 ml-3" />
                 </div>
                 <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
                   {visit.notes.subjective}
@@ -323,7 +373,7 @@ export default function ViewPatientVisitDetails() {
 
               {/* ── OBJECTIVE ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center mb-4">
                   <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
                     <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
                       O
@@ -332,7 +382,7 @@ export default function ViewPatientVisitDetails() {
                   <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
                     Objective
                   </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700 ml-3" />
                 </div>
                 {/* Vitals grid */}
                 <div className="grid grid-cols-4 gap-2 mb-4">
@@ -364,7 +414,7 @@ export default function ViewPatientVisitDetails() {
 
               {/* ── ASSESSMENT ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center mb-4">
                   <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
                     <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
                       A
@@ -373,9 +423,9 @@ export default function ViewPatientVisitDetails() {
                   <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
                     Assessment
                   </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700 ml-3" />
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-2 list-disc pl-5">
                   {visit.notes.assessment.map((item, idx) => {
                     const { diagnosis, status } = parseAssessmentStatus(item);
                     return (
@@ -401,7 +451,7 @@ export default function ViewPatientVisitDetails() {
 
               {/* ── PLAN ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center mb-4">
                   <div className="size-6 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
                     <span className="text-xs font-bold text-green-600 dark:text-green-400">
                       P
@@ -410,17 +460,16 @@ export default function ViewPatientVisitDetails() {
                   <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
                     Plan
                   </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700 ml-3" />
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-2 list-disc pl-5">
                   {visit.notes.plan.map((item, idx) => (
                     <li
                       key={idx}
-                      className={`text-sm leading-relaxed ${
-                        idx === 0
+                      className={`text-sm leading-relaxed ${idx === 0
                           ? "text-blue-600 dark:text-blue-400 font-medium"
                           : "text-gray-700 dark:text-slate-300"
-                      }`}
+                        }`}
                     >
                       {item}
                     </li>
@@ -433,4 +482,4 @@ export default function ViewPatientVisitDetails() {
       </div>
     </div>
   );
-}
+};
