@@ -7,9 +7,10 @@ from utils.jwt_helper import verify_csrf, get_current_user
 from stt.transcribe import transcribe_audio_from_url
 from stt.parse_transcription import parse_transcription_response
 from llm.soap_generator import generate_soap_note
+from llm.gemini_client import get_gemini_client
 import logging
 
-router = APIRouter(prefix="/visits", tags=["visits"])
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
@@ -54,8 +55,9 @@ def create_consultation(
             num_speakers=2,
         )
 
+        gemini_client = get_gemini_client()
         full_text, parsed_transcription = parse_transcription_response(
-            transcription_raw
+            transcription_raw, llm=gemini_client
         )
         notes = generate_soap_note(parsed_transcription)
 

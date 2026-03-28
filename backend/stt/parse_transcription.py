@@ -1,8 +1,9 @@
 import re
 from typing import Any, List, Dict
+from stt.label_transcription import label_transcription
 
 
-def parse_transcription_response(response: Any, gap_threshold: float = 0.7):
+def parse_transcription_response(response: Any, llm=None, gap_threshold: float = 0.7):
     """
     Parses ElevenLabs transcription API response into:
       - full_text: complete transcript string
@@ -90,5 +91,10 @@ def parse_transcription_response(response: Any, gap_threshold: float = 0.7):
             "sentence": sentence_text,
             "speaker": speakers,
         })
+
+    if llm is not None:
+        labeled, err = label_transcription(sentence_segments, llm)
+        if not err:
+            sentence_segments = labeled
 
     return full_text, sentence_segments

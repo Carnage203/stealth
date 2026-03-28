@@ -11,5 +11,4 @@ def get_gemini_client():
             raise RuntimeError("GEMINI_API_KEY not set")
         _client = genai.Client(api_key=api_key)
 
-    # MUST return the client, not client.models.get(...)
     return _client

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import APIRouter
 from api.auth.signup import router as signup_router
 from api.auth.activate import router as activate_router
 from api.profile.completeProfile import router as complete_profile_router
@@ -84,29 +84,23 @@ apiRouter.include_router(
 apiRouter.include_router(
     patient_detail_router,
     prefix='/patients',
-    tags=['patients']
+    tags=['Patients']
 )
 apiRouter.include_router(
     get_patients_router,
     prefix='/patients',
-    tags=['patients']
+    tags=['Patients']
 )
 
 apiRouter.include_router(
     get_visits_by_visit_id_router,
     prefix='/visits',
-    tags=['visits']
+    tags=['Visits']
 )
 apiRouter.include_router(
     create_consultation_router,
     prefix='/visits',
-    tags=['visits']
-)
-
-apiRouter.include_router(
-    get_visits_by_visit_id_router,
-    prefix='/visits',
-    tags=['visits']
+    tags=['Visits']
 )
 
 
@@ -114,15 +108,15 @@ apiRouter.include_router(
 apiRouter.include_router(
     get_all_sessions_router,
     prefix='/sessions',
-    tags=['sessions']
+    tags=['Sessions']
 )
 apiRouter.include_router(
     logout_device_by_session_id_router,
     prefix='/sessions',
-    tags=['sessions']
+    tags=['Sessions']
 )
 apiRouter.include_router(
     logout_all_device_router,
     prefix='/sessions',
-    tags=['sessions']
+    tags=['Sessions']
 )

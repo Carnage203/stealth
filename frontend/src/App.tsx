@@ -3,6 +3,7 @@ import { ThemeProvider } from "./components/theme-provider";
 
 import { Toaster } from "react-hot-toast";
 
+
 export default function App() {
   return (
     <>

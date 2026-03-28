@@ -5,7 +5,7 @@ from api import apiRouter
 
 load_dotenv()
 
-app = FastAPI(title="Stealth Backend",version="1.0.0")
+app = FastAPI(title="Stealth Backend", version="1.0.0")
 
 # CORS configuration
 app.add_middleware(
