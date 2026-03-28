@@ -30,7 +30,6 @@ export default function AccountActivation() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // Validate token on component mount
   useEffect(() => {
     const validateToken = async () => {
       if (!token) {
@@ -40,7 +39,7 @@ export default function AccountActivation() {
       }
 
       try {
-        // Replace with your actual API endpoint
+        
         const response = await fetch(`${SERVER_URL}/auth/validate-reset-token`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -81,7 +80,7 @@ export default function AccountActivation() {
     setIsLoading(true);
 
     try {
-      // Replace with your actual API endpoint
+      
       const response = await fetch(`${SERVER_URL}/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

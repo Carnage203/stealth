@@ -42,7 +42,9 @@ def create_refresh_token(email: str):
 def verify_csrf(request: Request):
     csrf_cookie = request.cookies.get("csrf_token")
     csrf_header = request.headers.get("X-CSRF-Token")
+    print(f"CSRF Cookie: {csrf_cookie}, CSRF Header: {csrf_header}")
 
+    
     if not csrf_cookie or csrf_cookie != csrf_header:
         raise HTTPException(status_code=403, detail="CSRF validation failed")
 
@@ -60,3 +62,23 @@ def get_current_user(request: Request):
         raise HTTPException(status_code=401)
 
 
+def create_reset_token(user_id: str) -> str:
+    payload = {
+        "sub": user_id,
+        "type": "password_reset",
+        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+        "iat": datetime.now(timezone.utc),
+    }
+    return jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
+
+def verify_reset_token(token: str) -> str:
+    """Returns user_id if valid, raises HTTPException otherwise."""
+    try:
+        payload = jwt.decode(token, os.getenv("JWT_SECRET"), algorithms=["HS256"])
+        if payload.get("type") != "password_reset":
+            raise HTTPException(status_code=400, detail="Invalid token type")
+        return payload["sub"]
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=400, detail="Reset link has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=400, detail="Invalid reset token")

@@ -47,7 +47,7 @@ export function Navbar() {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-6">
-           <AnimatedThemeToggler />
+           {/* <AnimatedThemeToggler /> */}
 
             <Link to="/get-activation-link" className="hidden sm:inline-block">
               <Button

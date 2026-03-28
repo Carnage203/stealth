@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -115,7 +115,9 @@ export default function ViewPatientVisitDetails() {
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [],
+  );
 
     fetchData();
   }, [visitId, patientId, SERVER_URL]);
@@ -189,61 +191,13 @@ export default function ViewPatientVisitDetails() {
       {/* ── Patient Header ── */}
       <div className="bg-white border-b dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
-          {/* Avatar */}
-          <div className="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
-            {patient ? getInitials(patient.name) : "??"}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => navigate(-1)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                <ArrowLeft className="size-4" />
-              </button>
-              <h1 className="text-xl font-bold dark:text-white">
-                {patient?.name ?? "Patient"}
-              </h1>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white">
-                Active
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
-              {patient && (
-                <>
-                  <span>🗓 {patient.age}y</span>
-                  <span>•</span>
-                </>
-              )}
-              <span>🪪 ID: #{visit.patientId.slice(-6).toUpperCase()}</span>
-              <span>•</span>
-              <span>📋 Visit: {formatDate(visit.date)}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
           <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5 text-xs h-8"
-            onClick={handleCopyNote}
+            variant="ghost"
+            size="icon"
+            onClick={handleBack}
+            className="h-8 w-8"
           >
-            {copied ? (
-              "Copied!"
-            ) : (
-              <>
-                <Copy className="size-3.5" />
-                Copy Note
-              </>
-            )}
-          </Button>
-
-          <Button
-            size="sm"
-            className="gap-1.5 text-xs h-8 bg-blue-600 hover:bg-blue-700"
-          >
-            <Save className="size-3.5" /> Submit for Billing
+            <ArrowLeft className="size-4" />
           </Button>
         </div>
       </div>
@@ -327,38 +281,26 @@ export default function ViewPatientVisitDetails() {
           </div>
         </div>
 
-        {/* ════ RIGHT: SOAP NOTES ════ */}
-        <div className="w-1/2 flex flex-col bg-gray-50 dark:bg-slate-950">
-          {/* AI draft banner */}
-          {showAiBanner && (
-            <div className="flex items-center justify-between px-5 py-2.5 bg-blue-50 dark:bg-blue-950/40 border-b border-blue-100 dark:border-blue-900 shrink-0">
-              <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
-                <Sparkles className="size-3.5 text-blue-500 shrink-0" />
-                AI Draft generated from clinical transcript. Review and edit as
-                needed.
-              </div>
-              <div className="flex items-center gap-3 text-xs shrink-0 ml-3">
-                <button className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-                  Regenerate
-                </button>
-                <button
-                  className="text-gray-400 hover:underline"
-                  onClick={() => setShowAiBanner(false)}
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          )}
-
-          <ScrollArea className="flex-1 min-h-0">
-            <div className="px-5 py-4 space-y-3">
-              {/* ── SUBJECTIVE ── */}
-              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="size-6 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
-                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400">S</span>
+        {/* Patient & Visit Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="size-5" />
+              Patient & Visit Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-gray-500">
+                  Patient Details
+                </h3>
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-xl font-semibold">{patient.name}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="secondary">{patient.gender}</Badge>
+                      <Badge variant="secondary">{patient.age} years</Badge>
                     </div>
                     <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Subjective</span>
                   </div>
@@ -369,14 +311,22 @@ export default function ViewPatientVisitDetails() {
                 </p>
               </div>
 
-              {/* ── OBJECTIVE ── */}
-              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
-                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400">O</span>
-                    </div>
-                    <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Objective</span>
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-gray-500">
+                  Visit Details
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="size-4 text-gray-400" />
+                    <span>{formatDate(visit.date)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="size-4 text-gray-400" />
+                    <span>Duration: {visit.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Activity className="size-4 text-gray-400" />
+                    <span>Doctor: {visit.doctor}</span>
                   </div>
                   <div className="h-px bg-gray-200 dark:bg-slate-700" />
                 </div>
@@ -403,10 +353,82 @@ export default function ViewPatientVisitDetails() {
                     </div>
                   ))}
                 </div>
-                <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
-                  {visit.notes.objective}
-                </p>
-              </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* SOAP Notes */}
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="size-5" />
+                SOAP Notes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[600px] pr-4">
+                <div className="space-y-6">
+                  {/* Subjective */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
+                        S
+                      </Badge>
+                      <h3 className="font-semibold">Subjective</h3>
+                    </div>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {visit.soap.subjective}
+                    </p>
+                  </div>
+
+                  <Separator />
+
+                  {/* Objective with Vitals */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+                        O
+                      </Badge>
+                      <h3 className="font-semibold">Objective</h3>
+                    </div>
+
+                    {/* Vitals */}
+                    <div className="mb-3 p-3 bg-green-300 rounded-lg border border-green-200">
+                      <h4 className="text-sm font-medium mb-2">Vital Signs</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <span className="text-gray-600">BP:</span>{" "}
+                          <span className="font-medium">
+                            {visit.soap.vitals.bp}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Pulse:</span>{" "}
+                          <span className="font-medium">
+                            {visit.soap.vitals.pulse}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Temp:</span>{" "}
+                          <span className="font-medium">
+                            {visit.soap.vitals.temp}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Resp:</span>{" "}
+                          <span className="font-medium">
+                            {visit.soap.vitals.resp}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {visit.soap.objective}
+                    </p>
+                  </div>
+
+                  <Separator />
 
               {/* ── ASSESSMENT ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
@@ -474,4 +496,4 @@ export default function ViewPatientVisitDetails() {
       </div>
     </div>
   );
-};
+}
