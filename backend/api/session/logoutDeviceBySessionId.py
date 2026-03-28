@@ -4,9 +4,7 @@ from bson import ObjectId
 
 router = APIRouter()
 
-@router.delete("/logout/single-device",
-               summary="Logout from a specific device",
-            description="Revokes the active session for the specified device.")
+@router.delete("/{session_id}")
 async def logout_device(session_id: str):
     result = sessions_collection.update_one(
         {"_id": ObjectId(session_id)},

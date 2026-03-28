@@ -36,7 +36,7 @@ export function Benefits() {
             <div
               key={index}
               className="
-                
+                bg-white dark:bg-slate-800
                 rounded-2xl
                 p-8
                 border border-slate-200 dark:border-slate-700
