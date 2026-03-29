@@ -50,9 +50,9 @@ export default function ForgotPassword() {
   };
 
 return (
-  <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 ">
+  <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
     {/* LEFT COLUMN — FORGOT PASSWORD FLOW (UNCHANGED CONTENT) */}
-    <div className="flex w-full flex-col items-center justify-center px-6 lg:px-20 xl:px-20 ">
+    <div className="flex w-full flex-col items-center justify-center px-6 lg:px-20 xl:px-20 bg-white">
       <div className="w-full max-w-lg">
 
         {/* Logo */}
@@ -189,31 +189,31 @@ return (
     </div>
 
     {/* RIGHT COLUMN — BRANDING (NEW STRUCTURE, SAME TEXT) */}
-    <div className="font-serif hidden lg:flex flex-col justify-center px-14 bg-gradient-to-b from-blue-50 to-blue-200">
-      <h3 className="text-gray-900 mb-6 text-4xl font-bold leading-tight text-center">
+    <div className="hidden lg:flex flex-col justify-center px-14 bg-gradient-to-b from-blue-50 to-blue-200">
+      <h3 className="mb-6 text-4xl font-bold leading-tight text-center">
         Secure Password <br />
         Recovery
       </h3>
 
-      <p className="text-gray-900 mx-auto max-w-xl text-center text-xl opacity-90 leading-relaxed">
+      <p className="mx-auto max-w-xl text-center text-xl opacity-90 leading-relaxed">
         Your account security is our priority. Reset your password
         safely with our encrypted recovery system.
       </p>
 
-      <div className="text-gray-900 mt-12 grid grid-cols-3 gap-6 max-w-xl mx-auto">
-          <div className="rounded-xl border border-green-800 p-6 text-center shadow-sm hover:bg-green-100 transition-colors">
+      <div className="mt-12 grid grid-cols-3 gap-6 max-w-xl mx-auto">
+        <div className="rounded-xl bg-white p-6 text-center shadow-sm">
           <p className="text-3xl font-bold">100%</p>
           <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-slate-500">
             Encrypted
           </p>
         </div>
-          <div className="rounded-xl border border-green-800 p-6 text-center shadow-sm hover:bg-green-100 transition-colors">
+        <div className="rounded-xl bg-white p-6 text-center shadow-sm">
           <p className="text-3xl font-bold">SOC2</p>
           <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-slate-500">
             Certified
           </p>
         </div>
-          <div className="rounded-xl border border-green-800 p-6 text-center shadow-sm hover:bg-green-100 transition-colors">
+        <div className="rounded-xl bg-white p-6 text-center shadow-sm">
           <p className="text-3xl font-bold">HIPAA</p>
           <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-slate-500">
             Compliant

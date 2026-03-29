@@ -199,8 +199,9 @@ export default function ViewPatientVisitDetails() {
       {/* ── Patient Header ── */}
       {/* <div className="bg-white rounded-2xl border-b dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex items-center justify-between shrink-0"> */}
       <div className="bg-white rounded-xl md:rounded-2xl border-b dark:bg-slate-900 dark:border-slate-800 px-3 sm:px-4 md:px-6 py-3 md:py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 shrink-0">
+        
         {/* <div className="flex items-center gap-4"> */}
-        <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
+        <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">          
           {/* Avatar */}
           <div className="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
             {patient ? getInitials(patient.name) : "??"}
@@ -246,7 +247,7 @@ export default function ViewPatientVisitDetails() {
           <Button
             size="sm"
             className="gap-1.5 text-xs h-8 bg-blue-600 hover:bg-blue-700"
-            onClick={() =>
+             onClick={() =>
               toast("Submitted for billing! (not really, this is a demo)")
             }
           >
@@ -391,16 +392,14 @@ export default function ViewPatientVisitDetails() {
 
               {/* ── OBJECTIVE ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                      O
-                    </span>
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400">O</span>
+                    </div>
+                    <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Objective</span>
                   </div>
-                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
-                    Objective
-                  </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                  <div className="h-px bg-gray-200 dark:bg-slate-700" />
                 </div>
                 {/* Vitals grid */}
                 <div className="grid grid-cols-4 gap-2 mb-4">
@@ -501,4 +500,4 @@ export default function ViewPatientVisitDetails() {
       </div>
     </div>
   );
-}
+};

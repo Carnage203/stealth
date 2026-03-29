@@ -480,7 +480,7 @@ export default function Registration() {
       </div>
 
       {/* RIGHT COLUMN */}
-      <div className=" font-serif hidden lg:flex flex-col justify-center px-14 bg-gradient-to-b from-blue-50 to-blue-100">
+      <div className="hidden lg:flex flex-col justify-center px-14 bg-gradient-to-b from-blue-50 to-blue-100">
         <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.15em] text-teal-700 bg-white px-5 py-1.5 rounded-full shadow-sm w-fit mb-6">
           <span className="w-2 h-2 rounded-full bg-teal-600"></span>
           EMPOWERING INDEPENDENT CARE

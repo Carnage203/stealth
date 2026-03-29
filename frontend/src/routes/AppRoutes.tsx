@@ -21,8 +21,6 @@ import Patients from "@/pages/doctor/patients";
 import RecordingConsultationCard from "@/components/RecordingConsultationCard";
 import ViewPatientDetails from "@/pages/doctor/viewPatientDetails";
 import ViewPatientVisitDetails from "@/pages/doctor/viewPatientVisitDetails";
-import Settings from "@/pages/doctor/setting";
-
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -58,9 +56,9 @@ export default function AppRoutes() {
       <Route
         path="/doctor"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <DoctorLayout />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         }
       >
         <Route index element={<Dashboard />} />
@@ -68,7 +66,6 @@ export default function AppRoutes() {
         <Route path="patients/:id" element={<ViewPatientDetails />} />
         <Route path="patients/:id/visit/:visitId" element={<ViewPatientVisitDetails />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="settings" element={<Settings />} />
         <Route path="consultations" element={<RecordingConsultationCard />} />
       </Route>
 

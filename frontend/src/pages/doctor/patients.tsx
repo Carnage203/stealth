@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Plus,
@@ -8,15 +9,6 @@ import {
   Mail,
   Calendar,
   Loader2,
-  Users,
-  UserCheck,
-  Activity,
-  TrendingUp,
-  ChevronLeft,
-  ChevronRight,
-  X,
-  Venus,
-  Mars,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,8 +26,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import PatientDetailsModal from "@/components/PatientDetailsModal";
-import { useNavigate } from "react-router-dom";
 
 interface Patient {
   id: number;
@@ -56,7 +46,8 @@ interface PaginationData {
   itemsPerPage: number;
 }
 
-const mockPatients: Patient[] = [
+// Mock data - will be replaced by API
+const mockPatients = [
   {
     id: 1,
     name: "John Doe",
@@ -66,7 +57,6 @@ const mockPatients: Patient[] = [
     email: "john.doe@email.com",
     lastVisit: "2024-01-15",
     condition: "Hypertension",
-    totalVisits: 5,
   },
   {
     id: 2,
@@ -77,7 +67,6 @@ const mockPatients: Patient[] = [
     email: "jane.smith@email.com",
     lastVisit: "2024-01-14",
     condition: "Diabetes",
-    totalVisits: 3,
   },
   {
     id: 3,
@@ -88,7 +77,6 @@ const mockPatients: Patient[] = [
     email: "mike.j@email.com",
     lastVisit: "2024-01-10",
     condition: "Arthritis",
-    totalVisits: 8,
   },
   {
     id: 4,
@@ -99,8 +87,6 @@ const mockPatients: Patient[] = [
     email: "sarah.w@email.com",
     lastVisit: "2024-01-18",
     condition: "Asthma",
-
-    totalVisits: 2,
   },
   {
     id: 5,
@@ -111,7 +97,6 @@ const mockPatients: Patient[] = [
     email: "david.brown@email.com",
     lastVisit: "2024-01-12",
     condition: "Heart Disease",
-    totalVisits: 10,
   },
   {
     id: 6,
@@ -122,7 +107,6 @@ const mockPatients: Patient[] = [
     email: "emily.d@email.com",
     lastVisit: "2024-01-20",
     condition: "Migraine",
-    totalVisits: 61,
   },
   {
     id: 7,
@@ -133,7 +117,6 @@ const mockPatients: Patient[] = [
     email: "robert.miller@email.com",
     lastVisit: "2024-01-11",
     condition: "High Cholesterol",
-    totalVisits: 4,
   },
   {
     id: 8,
@@ -144,7 +127,6 @@ const mockPatients: Patient[] = [
     email: "lisa.a@email.com",
     lastVisit: "2024-01-19",
     condition: "Thyroid Disorder",
-    totalVisits: 7,
   },
   {
     id: 9,
@@ -155,7 +137,6 @@ const mockPatients: Patient[] = [
     email: "james.wilson@email.com",
     lastVisit: "2024-01-09",
     condition: "COPD",
-    totalVisits: 9,
   },
   {
     id: 10,
@@ -166,7 +147,6 @@ const mockPatients: Patient[] = [
     email: "maria.garcia@email.com",
     lastVisit: "2024-01-17",
     condition: "Anemia",
-    totalVisits: 6,
   },
   {
     id: 11,
@@ -177,7 +157,6 @@ const mockPatients: Patient[] = [
     email: "chris.lee@email.com",
     lastVisit: "2024-01-16",
     condition: "Anxiety",
-    totalVisits: 12,
   },
   {
     id: 12,
@@ -188,7 +167,6 @@ const mockPatients: Patient[] = [
     email: "patricia.t@email.com",
     lastVisit: "2024-01-13",
     condition: "Osteoporosis",
-    totalVisits: 4,
   },
   {
     id: 13,
@@ -199,7 +177,6 @@ const mockPatients: Patient[] = [
     email: "daniel.m@email.com",
     lastVisit: "2024-01-21",
     condition: "Back Pain",
-    totalVisits: 15,
   },
   {
     id: 14,
@@ -210,7 +187,6 @@ const mockPatients: Patient[] = [
     email: "jennifer.thomas@email.com",
     lastVisit: "2024-01-08",
     condition: "PCOS",
-    totalVisits: 5,
   },
   {
     id: 15,
@@ -221,8 +197,6 @@ const mockPatients: Patient[] = [
     email: "matthew.h@email.com",
     lastVisit: "2024-01-07",
     condition: "Parkinson's",
-
-    totalVisits: 20,
   },
   {
     id: 16,
@@ -233,7 +207,6 @@ const mockPatients: Patient[] = [
     email: "nancy.clark@email.com",
     lastVisit: "2024-01-22",
     condition: "Allergies",
-    totalVisits: 3,
   },
   {
     id: 17,
@@ -244,7 +217,6 @@ const mockPatients: Patient[] = [
     email: "paul.r@email.com",
     lastVisit: "2024-01-06",
     condition: "Kidney Stones",
-    totalVisits: 8,
   },
   {
     id: 18,
@@ -255,7 +227,6 @@ const mockPatients: Patient[] = [
     email: "karen.white@email.com",
     lastVisit: "2024-01-23",
     condition: "Depression",
-    totalVisits: 10,
   },
   {
     id: 19,
@@ -266,7 +237,6 @@ const mockPatients: Patient[] = [
     email: "steven.lewis@email.com",
     lastVisit: "2024-01-05",
     condition: "Gout",
-    totalVisits: 6,
   },
   {
     id: 20,
@@ -450,137 +420,43 @@ const mockPatients: Patient[] = [
   },
 ];
 
+interface Patient {
+  id: number;
+  name: string;
+  age: number;
+  gender: string;
+  phone: string;
+  email: string;
+  lastVisit: string;
+  condition: string;
+}
+
+interface PaginationData {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
+// Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
   useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [value, delay]);
+
   return debouncedValue;
-}
-
-/** Two-letter initials from full name */
-function initials(name: string) {
-  const parts = name.trim().split(" ");
-  return parts.length >= 2
-    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-    : name.slice(0, 2).toUpperCase();
-}
-
-/** Deterministic pastel hue from name string */
-function avatarHue(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++)
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  return Math.abs(hash) % 360;
-}
-
-/** Condition severity palette */
-const SEVERITY: Record<string, { bg: string; text: string; dot: string }> = {
-  high: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-400" },
-  mid: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-400" },
-  low: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-400" },
-};
-
-const HIGH_SEVERITY = new Set([
-  "Heart Disease",
-  "Atrial Fibrillation",
-  "COPD",
-  "Parkinson's",
-  "Pneumonia",
-  "Hepatitis",
-  "Lupus",
-]);
-const MID_SEVERITY = new Set([
-  "Hypertension",
-  "Diabetes",
-  "Osteoporosis",
-  "Rheumatoid Arthritis",
-  "Osteoarthritis",
-  "Sleep Apnea",
-  "Chronic Fatigue",
-  "Kidney Stones",
-  "Glaucoma",
-  "Endometriosis",
-]);
-
-function severityKey(condition: string) {
-  if (HIGH_SEVERITY.has(condition)) return "high";
-  if (MID_SEVERITY.has(condition)) return "mid";
-  return "low";
-}
-
-/** Format ISO date to e.g. "Jan 15, 2024" */
-function fmtDate(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function Avatar({ name }: { name: string }) {
-  const hue = avatarHue(name);
-  return (
-    <span
-      className="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold flex-shrink-0 select-none"
-      style={{
-        background: `hsl(${hue},55%,88%)`,
-        color: `hsl(${hue},45%,35%)`,
-      }}
-    >
-      {initials(name)}
-    </span>
-  );
-}
-
-function ConditionBadge({ condition }: { condition: string }) {
-  const sev = SEVERITY[severityKey(condition)];
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${sev.bg} ${sev.text}`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full ${sev.dot}`} />
-      {condition}
-    </span>
-  );
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  sub,
-  color,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: string | number;
-  sub?: string;
-  color: string;
-}) {
-  return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-5 flex items-start gap-4 shadow-sm hover:shadow-md transition-shadow">
-      <div className={`p-2.5 rounded-xl ${color}`}>
-        <Icon className="w-5 h-5" />
-      </div>
-      <div>
-        <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">
-          {label}
-        </p>
-        <p className="text-2xl font-bold text-slate-800 leading-tight mt-0.5">
-          {value}
-        </p>
-        {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
-      </div>
-    </div>
-  );
 }
 
 export default function Patients() {
   const navigate = useNavigate();
-
   const [searchQuery, setSearchQuery] = useState("");
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(false);
@@ -593,219 +469,143 @@ export default function Patients() {
     itemsPerPage: 10,
   });
 
-  const debouncedSearch = useDebounce(searchQuery, 400);
-  const [open, setOpen] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
+  // Mock API call function - replace with actual API
   const fetchPatients = useCallback(async (page: number, search: string) => {
     setLoading(true);
     setError(null);
+
     try {
-      await new Promise((r) => setTimeout(r, 350));
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Mock API response
+      // In production, replace with:
+      // const response = await fetch(`/api/patients?page=${page}&search=${search}&limit=10`);
+      // const data = await response.json();
+      // setPatients(data.patients);
+      // setPagination(data.pagination);
 
       const itemsPerPage = 10;
-      const filtered = search
-        ? mockPatients.filter(
-            (p) =>
-              p.name.toLowerCase().includes(search.toLowerCase()) ||
-              p.email.toLowerCase().includes(search.toLowerCase()) ||
-              p.phone.includes(search),
-          )
-        : mockPatients;
+      let filteredData = mockPatients;
 
-      const totalItems = filtered.length;
-      const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
-      const safePage = Math.min(page, totalPages);
-      const start = (safePage - 1) * itemsPerPage;
+      // Apply search filter
+      if (search) {
+        filteredData = mockPatients.filter(
+          (patient) =>
+            patient.name.toLowerCase().includes(search.toLowerCase()) ||
+            patient.email.toLowerCase().includes(search.toLowerCase()) ||
+            patient.phone.includes(search),
+        );
+      }
 
-      setPatients(filtered.slice(start, start + itemsPerPage));
+      const totalItems = filteredData.length;
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      const startIndex = (page - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedData = filteredData.slice(startIndex, endIndex);
+
+      setPatients(paginatedData);
       setPagination({
-        currentPage: safePage,
+        currentPage: page,
         totalPages,
         totalItems,
         itemsPerPage,
       });
-    } catch {
-      setError("Failed to load patients. Please try again.");
+    } catch (err) {
+      setError("Failed to fetch patients. Please try again.");
+      console.error("Error fetching patients:", err);
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Fetch patients when page or search changes
   useEffect(() => {
-    fetchPatients(currentPage, debouncedSearch);
-  }, [currentPage, debouncedSearch, fetchPatients]);
+    fetchPatients(currentPage, debouncedSearchQuery);
+  }, [currentPage, debouncedSearchQuery, fetchPatients]);
+
+  // Reset to page 1 when search changes
   useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearch]);
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
+  }, [debouncedSearchQuery]);
 
-  // Stats derived from full dataset
-  const totalPatients = mockPatients.length;
-  const femaleCount = mockPatients.filter((p) => p.gender === "Female").length;
-  const avgAge = Math.round(
-    mockPatients.reduce((s, p) => s + p.age, 0) / totalPatients,
-  );
-  const recentVisits = mockPatients.filter(
-    (p) => new Date(p.lastVisit) >= new Date("2024-01-20"),
-  ).length;
+  const handleViewDetails = (patientId: number) => {
+    navigate(`/doctor/patient/${patientId}`);
+  };
 
-  const startItem =
-    patients.length > 0 ? (currentPage - 1) * pagination.itemsPerPage + 1 : 0;
-  const endItem = Math.min(
-    currentPage * pagination.itemsPerPage,
-    pagination.totalItems,
-  );
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
-  /** Compact page-number range around currentPage */
-  const pageNumbers = Array.from(
-    { length: pagination.totalPages },
-    (_, i) => i + 1,
-  ).filter(
-    (p) =>
-      p === 1 || p === pagination.totalPages || Math.abs(p - currentPage) <= 1,
-  );
+  const handleNextPage = () => {
+    if (currentPage < pagination.totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   return (
-    <div className="min-h-screen lg:p-6">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-        .patients-root { font-family: 'DM Sans', sans-serif; }
-        .fade-row { animation: fadeUp .25s ease both; }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-        .row-hover:hover { background: #f8faff !important; }
-      `}</style>
-
-      <div className="patients-root max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="min-h-screen p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-4xl font-bold text-[#137fec]">
-              Patient Records
-            </h1>
-            <p className="text-slate-500 mt-1 text-sm">
-              Manage and monitor your entire patient roster
-            </p>
+            <h1 className="text-3xl font-bold">Patients</h1>
+            <p className="text-gray-300 mt-1">Manage your patient records</p>
           </div>
-          <Button
-            onClick={() => setOpen(true)}
-            className="hover:cursor-pointer self-start sm:self-auto gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md"
-            style={{
-              background: "linear-gradient(135deg,#3b82f6,#6366f1)",
-              border: "none",
-            }}
-          >
-            <Plus className="w-4 h-4" /> Add Patient
+          <Button className="flex items-center gap-2">
+            <Plus className="size-4" />
+            Add Patient
           </Button>
-          <PatientDetailsModal open={open} onClose={() => setOpen(false)} />
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            icon={Users}
-            label="Total Patients"
-            value={totalPatients}
-            sub="All time"
-            color="bg-blue-50 text-blue-600"
-          />
-          <StatCard
-            icon={UserCheck}
-            label="Female Patients"
-            value={femaleCount}
-            sub={`${totalPatients - femaleCount} male`}
-            color="bg-purple-50 text-purple-600"
-          />
-          <StatCard
-            icon={Activity}
-            label="Avg. Patient Age"
-            value={avgAge}
-            sub="years old"
-            color="bg-amber-50 text-amber-600"
-          />
-          <StatCard
-            icon={TrendingUp}
-            label="Recent Visits"
-            value={recentVisits}
-            sub="Last 2 weeks"
-            color="bg-emerald-50 text-emerald-600"
-          />
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4">
-          <div className="flex gap-3 items-center">
+        {/* Search and Filter */}
+        <div className="rounded-lg shadow p-4 mb-6 border">
+          <div className="flex gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
               <Input
-                placeholder="Search by name, email or phone…"
-                className="pl-10 pr-10 h-10 rounded-xl border-slate-200 text-sm focus:ring-2 focus:ring-blue-100"
+                type="text"
+                placeholder="Search by name, email, or phone..."
+                className="pl-10"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               {loading && (
-                <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 animate-spin" />
-              )}
-              {!loading && searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-5 text-gray-400 animate-spin" />
               )}
             </div>
-            <Button
-              variant="outline"
-              className="gap-2 px-4 h-10 rounded-xl border-slate-200 text-sm font-medium text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-colors"
-            >
-              <Filter className="w-4 h-4" /> Filter
+            <Button variant="outline" className="flex items-center gap-2">
+              <Filter className="size-4" />
+              Filter
             </Button>
           </div>
-
-          {/* Active search chip */}
-          {debouncedSearch && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
-              <span>Results for</span>
-              <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 font-medium px-2 py-0.5 rounded-full">
-                "{debouncedSearch}"
-                <button onClick={() => setSearchQuery("")}>
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-              <span>— {pagination.totalItems} found</span>
-            </div>
-          )}
         </div>
 
+        {/* Error Message */}
         {error && (
-          <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
-            <X className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
 
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        {/* Patients Table */}
+        <div className="border rounded-lg shadow overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50/80 border-b border-slate-100">
-                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-5">
-                  Patient
-                </TableHead>
-                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Age
-                </TableHead>
-                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Gender
-                </TableHead>
-                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Contact
-                </TableHead>
-                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Last Visit
-                </TableHead>
-                {/* <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      Condition
-                    </TableHead> */}
-                <TableHead>Total Visits</TableHead>
-                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider text-right pr-5">
-                  Actions
-                </TableHead>
+              <TableRow>
+                <TableHead>Patient Name</TableHead>
+                <TableHead>Age</TableHead>
+                <TableHead>Gender</TableHead>
+                <TableHead>Contact</TableHead>
+                <TableHead>Last Visit</TableHead>
+                <TableHead>Condition</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -813,104 +613,48 @@ export default function Patients() {
                 <TableRow>
                   <TableCell
                     colSpan={7}
-                    className="py-16 text-center text-slate-500"
+                    className="text-center py-8 text-gray-500"
                   >
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-400" />
-                    <span className="text-sm">Loading patients…</span>
+                    <Loader2 className="size-6 animate-spin mx-auto mb-2" />
+                    Loading patients...
                   </TableCell>
                 </TableRow>
               ) : patients.length > 0 ? (
-                patients.map((patient, idx) => (
-                  <TableRow
-                    key={patient.id}
-                    className="fade-row row-hover border-b border-slate-50 transition-colors"
-                    style={{ animationDelay: `${idx * 30}ms` }}
-                  >
-                    {/* Name + avatar */}
-                    <TableCell className="pl-5 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <Avatar name={patient.name} />
-                        <span className="font-semibold text-slate-800 text-sm">
-                          {patient.name}
-                        </span>
-                      </div>
+                patients.map((patient) => (
+                  <TableRow key={patient.id}>
+                    <TableCell className="font-medium">
+                      {patient.name}
                     </TableCell>
-
-                    {/* Age */}
-                    <TableCell className="text-sm ">
-                      <span className="font-medium ">{patient.age}</span>
-                      <span className=" text-xs ml-0.5">yr</span>
-                    </TableCell>
-
-                    {/* Gender pill */}
-                    <TableCell>
-                      <span
-                        className={`text-m font-medium px-2.5 py-0.5 rounded-full ${
-                          patient.gender === "Female"
-                            ? "bg-pink-50 text-pink-700"
-                            : "bg-sky-50 text-sky-700"
-                        }`}
-                      >
-                        {patient.gender === "Female" ? (
-                          <span className="inline-flex items-center">
-                            <Venus className="w-3 h-3 mr-1" />
-                            {patient.gender}
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center">
-                            <Mars className="w-3 h-3 mr-1" />
-                            {patient.gender}
-                          </span>
-                        )}
-                      </span>
-                    </TableCell>
-
-                    {/* Contact */}
+                    <TableCell>{patient.age}</TableCell>
+                    <TableCell>{patient.gender}</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1.5 text-xs">
-                          <Phone className="w-3 h-3" />
-                          <span style={{ fontFamily: "'DM Mono', monospace" }}>
-                            {patient.phone}
-                          </span>
+                        <div className="flex items-center gap-1 text-sm">
+                          <Phone className="size-3" />
+                          {patient.phone}
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs ">
-                          <Mail className="w-3 h-3" />
+                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <Mail className="size-3" />
                           {patient.email}
                         </div>
                       </div>
                     </TableCell>
-
-                    {/* Last visit */}
                     <TableCell>
-                      <div className="flex items-center gap-1.5 text-sm">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {fmtDate(patient.lastVisit)}
+                      <div className="flex items-center gap-1">
+                        <Calendar className="size-4 text-gray-400" />
+                        {patient.lastVisit}
                       </div>
                     </TableCell>
-
-                    {/* Condition badge */}
-                    {/* <TableCell>
-                      <ConditionBadge condition={patient.condition} />
-                    </TableCell> */}
-                    {/* Total Visits */}
                     <TableCell>
-                      <div className="flex items-center gap-1.5 text-sm">
-                        <Activity className="w-3.5 h-3.5" />
-                        {patient.totalVisits ?? 0} visits
-                      </div>
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                        {patient.condition}
+                      </span>
                     </TableCell>
-
-                    {/* Actions */}
-                    <TableCell className="text-right pr-5">
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 rounded-lg hover:bg-slate-100"
-                          >
-                            <MoreVertical className="w-4 h-4 text-slate-500" />
+                          <Button variant="ghost" size="sm">
+                            <MoreVertical className="size-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
@@ -928,10 +672,9 @@ export default function Patients() {
                           <DropdownMenuItem className="text-sm cursor-pointer rounded-lg">
                             Edit Patient
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-sm cursor-pointer rounded-lg">
-                            View History
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-sm cursor-pointer rounded-lg text-red-600 focus:text-red-600 focus:bg-red-50">
+                          <DropdownMenuItem>Edit Patient</DropdownMenuItem>
+                          <DropdownMenuItem>View History</DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600">
                             Delete Patient
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -941,17 +684,15 @@ export default function Patients() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-16 text-center">
-                    <div className="text-4xl mb-3">🔍</div>
-                    <p className="font-semibold text-slate-700">
-                      No patients found
-                    </p>
-                    {debouncedSearch && (
-                      <p className="text-sm text-slate-400 mt-1">
-                        No results for{" "}
-                        <span className="font-medium">"{debouncedSearch}"</span>
-                        . Try a different term.
-                      </p>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-8 text-gray-500"
+                  >
+                    No patients found
+                    {debouncedSearchQuery && (
+                      <span className="block mt-1 text-sm">
+                        Try adjusting your search criteria
+                      </span>
                     )}
                   </TableCell>
                 </TableRow>
@@ -960,80 +701,70 @@ export default function Patients() {
           </Table>
         </div>
 
-        {pagination.totalItems > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-2">
-            <p className="text-sm text-slate-500">
-              Showing{" "}
-              <span className="font-semibold text-slate-700">
-                {startItem}–{endItem}
-              </span>{" "}
-              of{" "}
-              <span className="font-semibold text-slate-700">
-                {pagination.totalItems}
-              </span>{" "}
-              patients
-            </p>
-
-            <div className="flex items-center gap-1.5">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1 || loading}
-                className="border-slate-200 hover:border-blue-600 hover:cursor-pointer"
-              >
-                {/* <ChevronLeft className="w-4 h-4" /> */}
-                Previous
-              </Button>
-
-              {pageNumbers.map((page, idx, arr) => {
-                const gap = idx > 0 && page - arr[idx - 1] > 1;
-                return (
-                  <React.Fragment key={page}>
-                    {gap && (
-                      <span className="text-slate-400 text-sm px-1">…</span>
-                    )}
-                    <Button
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      disabled={loading}
-                      variant={currentPage === page ? "default" : "outline"}
-                      className={`h-8 w-8 p-0 rounded-lg text-sm font-medium transition-all ${
-                        currentPage === page
-                          ? "shadow-md"
-                          : "border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600"
-                      }`}
-                      style={
-                        currentPage === page
-                          ? {
-                              background:
-                                "linear-gradient(135deg,#3b82f6,#6366f1)",
-                              border: "none",
-                            }
-                          : {}
-                      }
-                    >
-                      {page}
-                    </Button>
-                  </React.Fragment>
-                );
-              })}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(pagination.totalPages, p + 1))
-                }
-                disabled={currentPage === pagination.totalPages || loading}
-                className="border-slate-200 hover:border-blue-600 hover:cursor-pointer"
-              >
-                {/* <ChevronRight className="w-4 h-4" /> */}
-                Next
-              </Button>
+        {/* Pagination */}
+        <div className="mt-6 flex justify-between items-center">
+          <p className="text-sm text-gray-600">
+            Showing{" "}
+            {patients.length > 0
+              ? (currentPage - 1) * pagination.itemsPerPage + 1
+              : 0}{" "}
+            to{" "}
+            {Math.min(
+              currentPage * pagination.itemsPerPage,
+              pagination.totalItems,
+            )}{" "}
+            of {pagination.totalItems} patients
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1 || loading}
+            >
+              Previous
+            </Button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+                .filter((page) => {
+                  // Show first page, last page, current page, and adjacent pages
+                  return (
+                    page === 1 ||
+                    page === pagination.totalPages ||
+                    Math.abs(page - currentPage) <= 1
+                  );
+                })
+                .map((page, index, array) => {
+                  // Add ellipsis
+                  const showEllipsisBefore =
+                    index > 0 && page - array[index - 1] > 1;
+                  return (
+                    <React.Fragment key={page}>
+                      {showEllipsisBefore && (
+                        <span className="px-2 text-gray-500">...</span>
+                      )}
+                      <Button
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        disabled={loading}
+                      >
+                        {page}
+                      </Button>
+                    </React.Fragment>
+                  );
+                })}
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNextPage}
+              disabled={currentPage === pagination.totalPages || loading}
+            >
+              Next
+            </Button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
