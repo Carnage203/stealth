@@ -22,6 +22,6 @@ def get_visit(visit_id: str):
         "id": visit["id"],
         "patientId": visit.get("patientId"),
         "date": visit.get("date"),
-        "notes": visit.get("notes", []),
+        "notes": visit.get("notes", {}),
         "transcription": visit.get("transcription", [])
     }
