@@ -8,7 +8,6 @@ import NotFound from "@/pages/public/NotFound";
 import Login from "@/pages/public/login";
 import About from "@/pages/public/about";
 import AccountActivation from "@/pages/public/resetPassword";
-import TEST from "../pages/test";
 import Register from "../pages/public/register";
 import RC from "../pages/doctor/RC";
 import ForgotPassword from "../pages/public/forgotPassword";
@@ -73,7 +72,6 @@ export default function AppRoutes() {
       </Route>
 
       {/* ===============Private Routes=============== */}
-      <Route path="/test" element={<TEST />} />
       {/* <Route path="/record" element={<RC />} /> */}
     </Routes>
   );
