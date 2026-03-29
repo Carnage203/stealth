@@ -13,6 +13,10 @@ import {
   Clock,
   FileText,
   MoreVertical,
+  Stethoscope,
+  Pencil,
+  TriangleAlert,
+  HeartPulse,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,19 +47,21 @@ import { Separator } from "@/components/ui/separator";
 
 // Mock patient data (replace with API)
 const mockPatient = {
-  id: 1,
-  name: "John Doe",
-  age: 45,
-  gender: "Male",
+  id: 88291,
+  name: "Jane Doe",
+  age: 34,
+  gender: "Female",
+  dob: "Jan 12, 1989",
   phone: "+91 9876543210",
-  email: "john.doe@email.com",
+  email: "jane.doe@email.com",
   address: "123 Main Street, Mumbai, Maharashtra 400001",
   bloodGroup: "O+",
-  lastVisit: "2024-01-15",
+  lastVisit: "Oct 24, 2023",
   condition: "Hypertension",
-  allergies: ["Penicillin", "Peanuts"],
+  allergies: ["Penicillin"],
   emergencyContact: "+91 9876543211",
-  emergencyContactName: "Jane Doe (Spouse)",
+  emergencyContactName: "John Doe (Spouse)",
+  avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
 };
 
 // Mock visits data (replace with API)
@@ -184,6 +190,7 @@ interface Patient {
   name: string;
   age: number;
   gender: string;
+  dob?: string;
   phone: string;
   email: string;
   address: string;
@@ -193,6 +200,7 @@ interface Patient {
   allergies: string[];
   emergencyContact: string;
   emergencyContactName: string;
+  avatar?: string;
 }
 
 interface PaginationData {

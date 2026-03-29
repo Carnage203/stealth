@@ -112,7 +112,6 @@ export const DoctorLayout = () => {
         )}
       </div>
 
-
       {/* Nav */}
       <nav className="flex-1 p-3 space-y-1">
         {menuItems.map((item) => {

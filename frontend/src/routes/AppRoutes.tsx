@@ -20,8 +20,10 @@ import GetActivationToken from "../pages/public/getActivationToken";
 import Patients from "@/pages/doctor/patients";
 import RecordingConsultationCard from "@/components/RecordingConsultationCard";
 import ViewPatientDetails from "@/pages/doctor/viewPatientDetails";
-import ViewPatientVisitDetails from "@/pages/doctor/viewPatientVisitDetails";
 import Settings from "@/pages/doctor/setting";
+
+import ViewPatientVisitDetails from "@/pages/doctor/viewPatientVisitDetails";
+import ReviewPatientDetails from "@/pages/doctor/reviewPatientDetails";
 
 
 export default function AppRoutes() {
@@ -66,6 +68,8 @@ export default function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="patients" element={<Patients />} />
         <Route path="patients/:id" element={<ViewPatientDetails />} />
+        <Route path="patients/:id/visit/review/:visitId/review-patient-details" element={<ReviewPatientDetails />} />
+
         <Route path="patients/:id/visit/:visitId" element={<ViewPatientVisitDetails />} />
         <Route path="profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
