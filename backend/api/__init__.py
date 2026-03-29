@@ -5,6 +5,7 @@ from api.profile.completeProfile import router as complete_profile_router
 from api.profile.updateProfile import router as update_profile_router
 from api.auth.refreshToken import router as refresh_token_router
 from api.auth.login import router as login_router
+from api.auth.me import router as me_router
 from api.auth.logout import router as logout_router
 from api.createConsulation import router as create_consultation_router
 from api.patients.getPatientByPatientId import router as patient_detail_router
@@ -15,7 +16,7 @@ from api.cloudinary.deleteCloudinaryFile import router as delete_cloudinary_file
 from api.session.getAllSessions import router as get_all_sessions_router
 from api.session.logoutDeviceBySessionId import router as logout_device_by_session_id_router
 from api.session.logoutAllDeviceBYUserId import router as logout_all_device_router
-
+from api.auth.resetToken import router as reset_token_router
 
 apiRouter = APIRouter()
 
@@ -64,6 +65,16 @@ apiRouter.include_router(
 )
 apiRouter.include_router(
     update_profile_router,
+    prefix='/auth',
+    tags=['Auth']
+)
+apiRouter.include_router(
+    me_router,
+    prefix='/auth',
+    tags=['Auth']
+)
+apiRouter.include_router(
+    reset_token_router,
     prefix='/auth',
     tags=['Auth']
 )

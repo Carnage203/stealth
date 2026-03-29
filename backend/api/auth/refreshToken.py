@@ -11,7 +11,6 @@ SECRET_KEY = os.getenv("JWT_SECRET")
 ALGORITHM = os.getenv("ALGORITHM")
 IS_PROD = os.getenv("ENVIRONMENT") == "production"
 
-
 router = APIRouter()
 
 @router.post(
@@ -85,13 +84,7 @@ def refresh_token(request: Request, response: Response):
         )
 
         return {
-            
             "message": "Token refreshed successfully",
-                "user": {
-                "id": str(user["_id"]),
-                "email": user["email"],
-                "name": user["fullName"]
-            }
         }
 
     except JWTError:

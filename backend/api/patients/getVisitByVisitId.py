@@ -6,7 +6,6 @@ from schemas.schema import VisitResponse
 
 router = APIRouter()
 
-
 @router.get("/{visit_id}", response_model=VisitResponse)
 def get_visit(visit_id: str):
     try:

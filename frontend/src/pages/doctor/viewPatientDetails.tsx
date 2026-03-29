@@ -12,6 +12,7 @@ import {
   Activity,
   Clock,
   FileText,
+  MoreVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 
 // Mock patient data (replace with API)
@@ -58,7 +65,7 @@ const mockVisits = [
     date: "2024-01-15",
     reason: "Routine Checkup",
     notes: "BP controlled, patient doing well",
-    doctor: "Dr. Smith",
+    status: "Billing",
     vitals: { bp: "120/80", temp: "98.6°F", weight: "75kg" },
   },
   {
@@ -66,7 +73,7 @@ const mockVisits = [
     date: "2023-12-20",
     reason: "Follow-up",
     notes: "Medication adjusted, BP slightly elevated",
-    doctor: "Dr. Smith",
+    status: "Completed",
     vitals: { bp: "130/85", temp: "98.4°F", weight: "76kg" },
   },
   {
@@ -74,7 +81,7 @@ const mockVisits = [
     date: "2023-11-11",
     reason: "Initial Visit",
     notes: "New patient, diagnosed with hypertension",
-    doctor: "Dr. Smith",
+    status: "Review",
     vitals: { bp: "140/90", temp: "98.6°F", weight: "77kg" },
   },
   {
@@ -82,7 +89,7 @@ const mockVisits = [
     date: "2023-10-05",
     reason: "Emergency Visit",
     notes: "Severe headache, BP monitoring required",
-    doctor: "Dr. Johnson",
+    status: "Billing",
     vitals: { bp: "150/95", temp: "99.1°F", weight: "77kg" },
   },
   {
@@ -90,7 +97,7 @@ const mockVisits = [
     date: "2023-09-15",
     reason: "Routine Checkup",
     notes: "General health assessment",
-    doctor: "Dr. Smith",
+    status: "Completed",
     vitals: { bp: "135/88", temp: "98.5°F", weight: "78kg" },
   },
   {
@@ -98,7 +105,7 @@ const mockVisits = [
     date: "2023-08-10",
     reason: "Follow-up",
     notes: "BP medication working well",
-    doctor: "Dr. Smith",
+    status: "Review",
     vitals: { bp: "125/82", temp: "98.6°F", weight: "78kg" },
   },
   {
@@ -106,7 +113,7 @@ const mockVisits = [
     date: "2023-07-22",
     reason: "Lab Results",
     notes: "Blood work shows improvement",
-    doctor: "Dr. Smith",
+    status: "Completed",
     vitals: { bp: "128/84", temp: "98.5°F", weight: "79kg" },
   },
   {
@@ -114,7 +121,7 @@ const mockVisits = [
     date: "2023-06-18",
     reason: "Routine Checkup",
     notes: "General wellness check",
-    doctor: "Dr. Smith",
+    status: "Billing",
     vitals: { bp: "132/86", temp: "98.7°F", weight: "79kg" },
   },
   {
@@ -122,7 +129,7 @@ const mockVisits = [
     date: "2023-05-12",
     reason: "Follow-up",
     notes: "Lifestyle changes discussed",
-    doctor: "Dr. Smith",
+    status: "Completed",
     vitals: { bp: "138/89", temp: "98.6°F", weight: "80kg" },
   },
   {
@@ -130,7 +137,7 @@ const mockVisits = [
     date: "2023-04-08",
     reason: "Emergency Visit",
     notes: "Chest discomfort, EKG normal",
-    doctor: "Dr. Johnson",
+    status: "Review",
     vitals: { bp: "145/92", temp: "99.0°F", weight: "80kg" },
   },
   {
@@ -138,7 +145,7 @@ const mockVisits = [
     date: "2023-03-15",
     reason: "Routine Checkup",
     notes: "Blood pressure monitoring",
-    doctor: "Dr. Smith",
+    status: "Completed",
     vitals: { bp: "140/90", temp: "98.5°F", weight: "81kg" },
   },
   {
@@ -146,7 +153,7 @@ const mockVisits = [
     date: "2023-02-20",
     reason: "Follow-up",
     notes: "Medication dosage adjustment",
-    doctor: "Dr. Smith",
+    status: "Review",
     vitals: { bp: "142/91", temp: "98.6°F", weight: "81kg" },
   },
   {
@@ -154,7 +161,7 @@ const mockVisits = [
     date: "2023-01-18",
     reason: "Initial Visit",
     notes: "First consultation for hypertension",
-    doctor: "Dr. Smith",
+    status: "Completed",
     vitals: { bp: "148/94", temp: "98.7°F", weight: "82kg" },
   },
 ];
@@ -170,6 +177,7 @@ interface Visit {
     temp: string;
     weight: string;
   };
+  status: "Completed" | "Review" | "Billing";
 }
 
 interface Patient {
@@ -220,7 +228,7 @@ export default function ViewPatientDetails() {
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [filterReason, setFilterReason] = useState<string>("all");
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<PaginationData>({
@@ -253,7 +261,7 @@ export default function ViewPatientDetails() {
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   const fetchPatientVisits = useCallback(
@@ -262,7 +270,7 @@ export default function ViewPatientDetails() {
       search: string,
       page: number,
       reason: string,
-      sort: "asc" | "desc"
+      sort: "asc" | "desc",
     ) => {
       setVisitsLoading(true);
       setError(null);
@@ -293,7 +301,7 @@ export default function ViewPatientDetails() {
         // Filter by reason
         if (reason !== "all") {
           filtered = filtered.filter((v) =>
-            v.reason.toLowerCase().includes(reason.toLowerCase())
+            v.reason.toLowerCase().includes(reason.toLowerCase()),
           );
         }
 
@@ -324,7 +332,7 @@ export default function ViewPatientDetails() {
         setVisitsLoading(false);
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -332,8 +340,21 @@ export default function ViewPatientDetails() {
   }, [id, fetchPatientDetails]);
 
   useEffect(() => {
-    fetchPatientVisits(id, debouncedSearchQuery, currentPage, filterReason, sortOrder);
-  }, [id, debouncedSearchQuery, currentPage, filterReason, sortOrder, fetchPatientVisits]);
+    fetchPatientVisits(
+      id,
+      debouncedSearchQuery,
+      currentPage,
+      filterReason,
+      sortOrder,
+    );
+  }, [
+    id,
+    debouncedSearchQuery,
+    currentPage,
+    filterReason,
+    sortOrder,
+    fetchPatientVisits,
+  ]);
 
   // Reset to page 1 when search or filter changes
   useEffect(() => {
@@ -363,7 +384,7 @@ export default function ViewPatientDetails() {
   };
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen lg:p-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
@@ -377,7 +398,9 @@ export default function ViewPatientDetails() {
               <ArrowLeft className="size-4" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">Patient Details</h1>
+              <h1 className="text-3xl font-bold text-[#137fec] ">
+                Patient Details
+              </h1>
               <p className="text-gray-500 mt-1">
                 Overview and complete visit history
               </p>
@@ -394,9 +417,9 @@ export default function ViewPatientDetails() {
         )}
 
         {/* Patient Summary Card */}
-        <Card>
+        <Card className="bg-white">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-[#137fec]">
               <User className="size-5" />
               Patient Information
             </CardTitle>
@@ -454,7 +477,9 @@ export default function ViewPatientDetails() {
                         <Calendar className="size-4 text-gray-400" />
                         <span>
                           Last Visit:{" "}
-                          <span className="font-medium">{patient.lastVisit}</span>
+                          <span className="font-medium">
+                            {patient.lastVisit}
+                          </span>
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
@@ -481,21 +506,6 @@ export default function ViewPatientDetails() {
                     </div>
                   </div>
                 </div>
-
-                <Separator />
-
-                {/* Emergency Contact */}
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-amber-900 mb-2">
-                    Emergency Contact
-                  </h3>
-                  <div className="space-y-1 text-sm">
-                    <p className="font-medium text-amber-900">
-                      {patient.emergencyContactName}
-                    </p>
-                    <p className="text-amber-800">{patient.emergencyContact}</p>
-                  </div>
-                </div>
               </div>
             ) : (
               <div className="flex items-center justify-center py-8">
@@ -504,9 +514,8 @@ export default function ViewPatientDetails() {
             )}
           </CardContent>
         </Card>
-
         {/* Visits Card */}
-        <Card>
+        <Card className="bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
@@ -562,16 +571,17 @@ export default function ViewPatientDetails() {
             </div>
 
             {/* Visits Table */}
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-lg overflow-hidden bg-white">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Visit ID</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Reason</TableHead>
-                    <TableHead>Doctor</TableHead>
                     <TableHead>Vitals</TableHead>
-                    <TableHead>Notes</TableHead>
+                    {/* <TableHead>Notes</TableHead> */}
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -599,25 +609,73 @@ export default function ViewPatientDetails() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
-                            <Calendar className="size-3 text-gray-400" />
+                            <Calendar className="size-3 " />
                             {visit.date}
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">{visit.reason}</Badge>
                         </TableCell>
-                        <TableCell className="text-sm">{visit.doctor}</TableCell>
+                        {/* <TableCell className="text-sm">
+                          {visit.doctor}
+                        </TableCell> */}
                         <TableCell>
                           <div className="text-xs space-y-0.5">
                             <div>BP: {visit.vitals.bp}</div>
                             <div>Temp: {visit.vitals.temp}</div>
-                            <div>Weight: {visit.vitals.weight}</div>
+                            {/* <div>Weight: {visit.vitals.weight}</div> */}
                           </div>
                         </TableCell>
-                        <TableCell className="max-w-xs">
+                        {/* <TableCell className="max-w-xs">
                           <span className="text-sm text-gray-600 line-clamp-2">
                             {visit.notes}
                           </span>
+                        </TableCell> */}
+                        <TableCell>
+                          {visit.status === "Completed" && (
+                            <Badge variant="success">Completed</Badge>
+                          )}
+                          {visit.status === "Review" && (
+                            <Badge variant="warning">Review</Badge>
+                          )}
+                          {visit.status === "Billing" && (
+                            <Badge variant="billing">Billing</Badge>
+                          )}
+                        </TableCell>
+
+                        {/* Actions */}
+                        <TableCell className="text-right pr-5">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 rounded-lg hover:bg-slate-100"
+                              >
+                                <MoreVertical className="w-4 h-4 text-slate-500" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              align="end"
+                              className="w-44 rounded-xl shadow-lg border-slate-100"
+                            >
+                              <DropdownMenuItem className="text-sm cursor-pointer rounded-lg">
+                                Proceed to{" "}
+                                {visit.status === "Billing"
+                                  ? "Billing"
+                                  : "Review"}
+                              </DropdownMenuItem>
+                              {/* <DropdownMenuItem className="text-sm cursor-pointer rounded-lg">
+                            Edit Patient
+                          </DropdownMenuItem> */}
+                              {/* <DropdownMenuItem className="text-sm cursor-pointer rounded-lg">
+                            View History
+                          </DropdownMenuItem> */}
+                              <DropdownMenuItem className="text-sm cursor-pointer rounded-lg text-red-600 focus:text-red-600 focus:bg-red-50">
+                                Delete Visit
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))
@@ -651,7 +709,7 @@ export default function ViewPatientDetails() {
                   to{" "}
                   {Math.min(
                     currentPage * pagination.itemsPerPage,
-                    pagination.totalItems
+                    pagination.totalItems,
                   )}{" "}
                   of {pagination.totalItems} visits
                 </p>
@@ -661,13 +719,14 @@ export default function ViewPatientDetails() {
                     size="sm"
                     onClick={handlePreviousPage}
                     disabled={currentPage === 1 || visitsLoading}
+                    className="border-slate-200 hover:border-blue-600 hover:cursor-pointer"
                   >
                     Previous
                   </Button>
                   <div className="flex items-center gap-1">
                     {Array.from(
                       { length: pagination.totalPages },
-                      (_, i) => i + 1
+                      (_, i) => i + 1,
                     )
                       .filter((page) => {
                         // Show first page, last page, current page, and adjacent pages
@@ -707,6 +766,7 @@ export default function ViewPatientDetails() {
                     disabled={
                       currentPage === pagination.totalPages || visitsLoading
                     }
+                    className="border-slate-200 hover:border-blue-600 hover:cursor-pointer"
                   >
                     Next
                   </Button>
