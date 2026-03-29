@@ -3,7 +3,6 @@ import {
   Search,
   Plus,
   Filter,
-  MoreVertical,
   Phone,
   Mail,
   Calendar,
@@ -17,6 +16,8 @@ import {
   X,
   Venus,
   Mars,
+  Download,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,14 +29,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import PatientDetailsModal from "@/components/PatientDetailsModal";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 interface Patient {
   id: number;
@@ -578,6 +575,60 @@ function StatCard({
   );
 }
 
+function handeleDelete(e: React.MouseEvent, patientId: number) {
+  e.stopPropagation();
+  toast.success(`Patient deleted successfully!`);
+}
+
+function exportPatientsToCSV(patients: Patient[]) {
+  
+  if (patients.length === 0) {
+    toast.error("No patients to export");
+    return;
+  }
+
+  const headers = [
+    "ID",
+    "Name",
+    "Age",
+    "Gender",
+    "Phone",
+    "Email",
+    "Last Visit",
+    "Condition",
+    "Total Visits",
+  ];
+  const csvRows = [
+    headers.join(","),
+    ...patients.map((patient) =>
+      [
+        patient.id,
+        `"${patient.name}"`,
+        patient.age,
+        patient.gender,
+        `"${patient.phone}"`,
+        `"${patient.email}"`,
+        patient.lastVisit,
+        `"${patient.condition}"`,
+        patient.totalVisits ?? 0,
+      ].join(","),
+    ),
+  ];
+
+  const csvContent = csvRows.join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `patients_export_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  toast.success(`Exported ${patients.length} patients to CSV`);
+}
+
 export default function Patients() {
   const navigate = useNavigate();
 
@@ -677,26 +728,28 @@ export default function Patients() {
       <div className="patients-root max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-[#137fec]">
-              Patient Records
-            </h1>
+            <h1 className="text-4xl font-bold text-black">Patient Directory</h1>
             <p className="text-slate-500 mt-1 text-sm">
               Manage and monitor your entire patient roster
             </p>
           </div>
-          <Button
-            onClick={() => setOpen(true)}
-            className="hover:cursor-pointer self-start sm:self-auto gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md"
-            style={{
-              background: "linear-gradient(135deg,#3b82f6,#6366f1)",
-              border: "none",
-            }}
-          >
-            <Plus className="w-4 h-4" /> Add Patient
-          </Button>
+          <div className="flex items-center gap-2 self-start sm:self-auto sm:ml-auto">
+            <Button
+              onClick={() => setOpen(true)}
+              className="hover:cursor-pointer"
+            >
+              <Plus className="w-4 h-4" /> Add Patient
+            </Button>
+            <Button
+              className="hover:cursor-pointer"
+              onClick={() => exportPatientsToCSV(patients)}
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </Button>
+          </div>
           <PatientDetailsModal open={open} onClose={() => setOpen(false)} />
         </div>
-
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             icon={Users}
@@ -804,7 +857,7 @@ export default function Patients() {
                     </TableHead> */}
                 <TableHead>Total Visits</TableHead>
                 <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider text-right pr-5">
-                  Actions
+                  Delete
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -823,8 +876,9 @@ export default function Patients() {
                 patients.map((patient, idx) => (
                   <TableRow
                     key={patient.id}
-                    className="fade-row row-hover border-b border-slate-50 transition-colors"
+                    className="fade-row row-hover border-b border-slate-50 transition-colors cursor-pointer"
                     style={{ animationDelay: `${idx * 30}ms` }}
+                    onClick={() => navigate(`/doctor/patients/${patient.id}`)}
                   >
                     {/* Name + avatar */}
                     <TableCell className="pl-5 py-3.5">
@@ -903,39 +957,14 @@ export default function Patients() {
 
                     {/* Actions */}
                     <TableCell className="text-right pr-5">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 rounded-lg hover:bg-slate-100"
-                          >
-                            <MoreVertical className="w-4 h-4 text-slate-500" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="w-44 rounded-xl shadow-lg border-slate-100"
-                        >
-                          <DropdownMenuItem
-                            onClick={() =>
-                              navigate(`/doctor/patients/${patient.id}`)
-                            }
-                            className="text-sm cursor-pointer rounded-lg"
-                          >
-                            View Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-sm cursor-pointer rounded-lg">
-                            Edit Patient
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-sm cursor-pointer rounded-lg">
-                            View History
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-sm cursor-pointer rounded-lg text-red-600 focus:text-red-600 focus:bg-red-50">
-                            Delete Patient
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600"
+                        onClick={(e) => handeleDelete(e, patient.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))

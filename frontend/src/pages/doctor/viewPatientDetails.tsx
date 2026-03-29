@@ -60,8 +60,9 @@ const mockPatient = {
   condition: "Hypertension",
   allergies: ["Penicillin"],
   emergencyContact: "+91 9876543211",
-  emergencyContactName: "John Doe (Spouse)",
-  avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+  emergencyContactName: "Rajat Dalal (Don)",
+  avatar:
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
 };
 
 // Mock visits data (replace with API)
@@ -392,28 +393,28 @@ export default function ViewPatientDetails() {
 
   return (
     <div className="min-h-screen lg:p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className=" mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Button
-              variant="ghost"
-              size="icon"
+              variant="outline"
+              className="hover:cursor-pointer hover:bg-linear-to-b from-blue-50 to-blue-100"
               onClick={handleBack}
-              className="h-8 w-8"
             >
               <ArrowLeft className="size-4" />
+              Back
             </Button>
-            <div>
+            {/* <div>
               <h1 className="text-3xl font-bold text-[#137fec] ">
                 Patient Details
               </h1>
               <p className="text-gray-500 mt-1">
                 Overview and complete visit history
               </p>
-            </div>
+            </div> */}
           </div>
-          {loading && <Loader2 className="size-6 animate-spin text-gray-400" />}
+          {loading && <Loader2 className="size-6 animate-spin " />}
         </div>
 
         {/* Error */}
@@ -423,100 +424,107 @@ export default function ViewPatientDetails() {
           </div>
         )}
 
-        {/* Patient Summary Card */}
+        {/* Patient Header Card */}
         <Card className="bg-white">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-[#137fec]">
-              <User className="size-5" />
-              Patient Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {patient ? (
-              <div className="space-y-6">
-                {/* Basic Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Basic Details
-                    </h3>
-                    <div>
-                      <h2 className="text-2xl font-semibold">{patient.name}</h2>
-                      <div className="mt-2 flex items-center gap-2">
-                        <Badge variant="secondary">{patient.gender}</Badge>
-                        <Badge variant="secondary">{patient.age} years</Badge>
-                        <Badge variant="secondary">{patient.bloodGroup}</Badge>
-                      </div>
-                      <div className="mt-3">
-                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-                          {patient.condition}
+              <div className="flex items-start justify-between gap-6">
+                {/* Left: Avatar + Info */}
+                <div className="flex items-start gap-5">
+                  {/* Avatar */}
+                  <img
+                    src={patient.avatar}
+                    alt={patient.name}
+                    className="w-24 h-24 rounded-full object-cover border-4 border-gray-100"
+                  />
+
+                  {/* Info */}
+                  <div className="space-y-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+                    {/* Name + ID */}
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-3">
+                        <h2 className="text-2xl font-bold text-gray-900">
+                          {patient.name}
+                        </h2>
+                        <Badge
+                          variant="secondary"
+                          className="bg-blue-100 text-blue-600 font-medium"
+                        >
+                          #{patient.id}
                         </Badge>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Contact Information
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Phone className="size-4 text-gray-400" />
-                        <span>{patient.phone}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Mail className="size-4 text-gray-400" />
-                        <span className="break-all">{patient.email}</span>
-                      </div>
-                      <div className="flex items-start gap-2 text-sm">
-                        <Activity className="size-4 text-gray-400 mt-0.5" />
-                        <span className="text-gray-600">{patient.address}</span>
-                      </div>
-                    </div>
-                  </div>
+                      {/* Gender, Age, DOB */}
+                      <p className="">
+                        {patient.gender}, {patient.age} yrs • DOB: {patient.dob}
+                      </p>
 
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Medical Information
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="size-4 text-gray-400" />
-                        <span>
-                          Last Visit:{" "}
-                          <span className="font-medium">
-                            {patient.lastVisit}
-                          </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <FileText className="size-4 text-gray-400" />
-                        <span>
-                          Patient ID:{" "}
-                          <span className="font-medium">#{patient.id}</span>
-                        </span>
-                      </div>
-                      <div className="text-sm">
-                        <span className="text-gray-500">Allergies: </span>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {patient.allergies.map((allergy) => (
-                            <Badge
-                              key={allergy}
-                              variant="destructive"
-                              className="text-xs"
-                            >
-                              {allergy}
-                            </Badge>
-                          ))}
-                        </div>
+                      {/* Last Visit */}
+                      <p className="">Last Visit: {patient.lastVisit}</p>
+                    </div>
+
+                    {/* Emergency Info */}
+                    <div className="space-y-1">
+                      <h1 className="text-2xl font-bold text-gray-900">
+                        Contact Information
+                      </h1>
+
+                      <a
+                        href={`mailto:${patient.email}`}
+                        className="flex items-center gap-3 hover:text-blue-600 cursor-pointer hover:decoration-blue-600 !underline!"
+                      >
+                        <Mail className="size-4 " />
+                        {patient.email}
+                      </a>
+
+                      <a
+                        href={`tel:${patient.emergencyContact}`}
+                        className="flex items-center gap-3 hover:text-blue-600 cursor-pointer !underline!"
+                      >
+                        <User className="size-4 " />
+                        {patient.emergencyContact}
+                      </a>
+
+                      <div className="flex items-center gap-3">
+                        <Activity className="size-4 " />
+                        <span className="">{patient.emergencyContactName}</span>
                       </div>
                     </div>
+
+                    {/* Badges: Allergy + Condition */}
+                    {/* <div className="flex items-center gap-3 pt-2">
+                      {patient.allergies.map((allergy) => (
+                        <Badge
+                          key={allergy}
+                          className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-3 py-1"
+                        >
+                          <TriangleAlert className="size-3.5 mr-1.5" />
+                          Allergy: {allergy}
+                        </Badge>
+                      ))}
+                      <Badge className="bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 px-3 py-1">
+                        <HeartPulse className="size-3.5 mr-1.5" />
+                        Condition: {patient.condition}
+                      </Badge>
+                    </div> */}
                   </div>
+                </div>
+
+                {/* Right: Action Buttons */}
+                <div className="flex flex-col gap-3">
+                  <Button className="bg-[#137fec] hover:bg-[#0f6dd1] text-white px-5">
+                    <Stethoscope className="size-4 mr-2" />
+                    Start New Visit
+                  </Button>
+                  <Button variant="outline" className="px-5">
+                    <Pencil className="size-4 mr-2" />
+                    Edit Profile
+                  </Button>
                 </div>
               </div>
             ) : (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="size-8 animate-spin text-gray-400" />
+                <Loader2 className="size-8 animate-spin " />
               </div>
             )}
           </CardContent>
@@ -538,7 +546,7 @@ export default function ViewPatientDetails() {
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-black" />
                 <Input
                   type="text"
                   placeholder="Search by visit ID, date (YYYY-MM-DD), or reason..."
@@ -547,7 +555,7 @@ export default function ViewPatientDetails() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 {visitsLoading && (
-                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-5 text-gray-400 animate-spin" />
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-5 text-black animate-spin" />
                 )}
               </div>
               <div className="flex gap-2">

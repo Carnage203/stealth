@@ -91,6 +91,7 @@ export const DoctorLayout = () => {
         {!(collapsed && !mobile) && (
           <Link to="/doctor" className="flex items-center gap-2">
             <Hospital className="size-8 text-blue-500" />
+
             {!collapsed && (
               <span className="font-semibold text-blue-400">{App_NAME}</span>
             )}
