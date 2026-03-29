@@ -171,13 +171,12 @@ interface Visit {
   date: string;
   reason: string;
   notes: string;
-  doctor: string;
+  status: string;
   vitals: {
     bp: string;
     temp: string;
     weight: string;
   };
-  status: "Completed" | "Review" | "Billing";
 }
 
 interface Patient {
