@@ -195,10 +195,10 @@ export default function ViewPatientVisitDetails() {
 
   return (
     // <div className=" flex flex-col min-h-screen">
-    <div className="flex flex-col  gap-3 md:gap-4">
+    <div className="flex flex-col -m-6 h-[calc(100%+3rem)] overflow-hidden">
       {/* ── Patient Header ── */}
       {/* <div className="bg-white rounded-2xl border-b dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex items-center justify-between shrink-0"> */}
-      <div className="bg-white rounded-xl md:rounded-2xl border-b dark:bg-slate-900 dark:border-slate-800 px-3 sm:px-4 md:px-6 py-3 md:py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 shrink-0">
+      <div className="bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 px-3 sm:px-4 md:px-6 py-3 md:py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 shrink-0">
         {/* <div className="flex items-center gap-4"> */}
         <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
           {/* Avatar */}
@@ -256,9 +256,9 @@ export default function ViewPatientVisitDetails() {
       </div>
 
       {/* ── Two-panel body ── */}
-      <div className="flex flex-1 gap-4">
+      <div className="flex flex-1 min-h-0">
         {/* ════ LEFT: TRANSCRIPT ════ */}
-        <div className="w-1/2 rounded-2xl border-r dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900">
+        <div className="w-1/2 border-r border-gray-200 dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900">
           {/* Panel header */}
           <div className="flex items-center justify-between px-5 py-3 border-b dark:border-slate-800 shrink-0">
             <div className="flex items-center gap-2">
@@ -370,7 +370,7 @@ export default function ViewPatientVisitDetails() {
           )}
 
           <ScrollArea className="flex-1 min-h-0">
-            <div className=" space-y-4">
+            <div className="space-y-4 p-4">
               {/* ── SUBJECTIVE ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
@@ -443,7 +443,7 @@ export default function ViewPatientVisitDetails() {
                   </span>
                   <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-2 list-disc list-inside">
                   {visit.notes.assessment.map((item, idx) => {
                     const { diagnosis, status } = parseAssessmentStatus(item);
                     return (
@@ -480,7 +480,7 @@ export default function ViewPatientVisitDetails() {
                   </span>
                   <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-2 list-disc list-inside">
                   {visit.notes.plan.map((item, idx) => (
                     <li
                       key={idx}

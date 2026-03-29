@@ -169,7 +169,7 @@ export const DoctorLayout = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#f6f7f8] dark:bg-slate-950 overflow-hidden">
+    <div className="h-screen bg-[#f6f7f8] dark:bg-slate-950 overflow-hidden">
       {/* Mobile top bar */}
       <div className="md:hidden flex items-center p-3 border-b dark:border-slate-800 bg-slate-900 text-white">
         <button onClick={() => setMobileOpen(true)}>
@@ -208,7 +208,7 @@ export const DoctorLayout = () => {
       {/* Main */}
       <main
         className={`transition-all duration-300
-          ${collapsed ? "md:ml-20" : "md:ml-64"}
+          ${collapsed ? "md:ml-18" : "md:ml-72"}
           h-full overflow-y-auto p-6
         `}
       >
