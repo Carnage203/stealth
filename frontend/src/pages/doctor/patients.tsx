@@ -37,7 +37,6 @@ import {
 import PatientDetailsModal from "@/components/PatientDetailsModal";
 import { useNavigate } from "react-router-dom";
 
-
 interface Patient {
   id: number;
   name: string;
@@ -918,12 +917,14 @@ export default function Patients() {
                           align="end"
                           className="w-44 rounded-xl shadow-lg border-slate-100"
                         >
-                         <DropdownMenuItem
-  onClick={() => navigate(`/doctor/patients/${patient.id}`)}
-  className="text-sm cursor-pointer rounded-lg"
->
-  View Details
-</DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              navigate(`/doctor/patients/${patient.id}`)
+                            }
+                            className="text-sm cursor-pointer rounded-lg"
+                          >
+                            View Details
+                          </DropdownMenuItem>
                           <DropdownMenuItem className="text-sm cursor-pointer rounded-lg">
                             Edit Patient
                           </DropdownMenuItem>

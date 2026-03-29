@@ -1,715 +1,498 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Search,
-  Calendar,
-  Phone,
-  Mail,
-  Loader2,
-  ArrowUpDown,
   ArrowLeft,
-  User,
-  Activity,
-  Clock,
-  FileText,
+  Copy,
+  Save,
+  Search,
+  CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+import { toast } from "react-hot-toast";
 
-// Mock patient data (replace with API)
-const mockPatient = {
-  id: 1,
-  name: "John Doe",
-  age: 45,
-  gender: "Male",
-  phone: "+91 9876543210",
-  email: "john.doe@email.com",
-  address: "123 Main Street, Mumbai, Maharashtra 400001",
-  bloodGroup: "O+",
-  lastVisit: "2024-01-15",
-  condition: "Hypertension",
-  allergies: ["Penicillin", "Peanuts"],
-  emergencyContact: "+91 9876543211",
-  emergencyContactName: "Jane Doe (Spouse)",
-};
-
-// Mock visits data (replace with API)
-const mockVisits = [
-  {
-    id: "V-1001",
-    date: "2024-01-15",
-    reason: "Routine Checkup",
-    notes: "BP controlled, patient doing well",
-    doctor: "Dr. Smith",
-    vitals: { bp: "120/80", temp: "98.6°F", weight: "75kg" },
-  },
-  {
-    id: "V-0987",
-    date: "2023-12-20",
-    reason: "Follow-up",
-    notes: "Medication adjusted, BP slightly elevated",
-    doctor: "Dr. Smith",
-    vitals: { bp: "130/85", temp: "98.4°F", weight: "76kg" },
-  },
-  {
-    id: "V-0921",
-    date: "2023-11-11",
-    reason: "Initial Visit",
-    notes: "New patient, diagnosed with hypertension",
-    doctor: "Dr. Smith",
-    vitals: { bp: "140/90", temp: "98.6°F", weight: "77kg" },
-  },
-  {
-    id: "V-0856",
-    date: "2023-10-05",
-    reason: "Emergency Visit",
-    notes: "Severe headache, BP monitoring required",
-    doctor: "Dr. Johnson",
-    vitals: { bp: "150/95", temp: "99.1°F", weight: "77kg" },
-  },
-  {
-    id: "V-0723",
-    date: "2023-09-15",
-    reason: "Routine Checkup",
-    notes: "General health assessment",
-    doctor: "Dr. Smith",
-    vitals: { bp: "135/88", temp: "98.5°F", weight: "78kg" },
-  },
-  {
-    id: "V-0620",
-    date: "2023-08-10",
-    reason: "Follow-up",
-    notes: "BP medication working well",
-    doctor: "Dr. Smith",
-    vitals: { bp: "125/82", temp: "98.6°F", weight: "78kg" },
-  },
-  {
-    id: "V-0545",
-    date: "2023-07-22",
-    reason: "Lab Results",
-    notes: "Blood work shows improvement",
-    doctor: "Dr. Smith",
-    vitals: { bp: "128/84", temp: "98.5°F", weight: "79kg" },
-  },
-  {
-    id: "V-0478",
-    date: "2023-06-18",
-    reason: "Routine Checkup",
-    notes: "General wellness check",
-    doctor: "Dr. Smith",
-    vitals: { bp: "132/86", temp: "98.7°F", weight: "79kg" },
-  },
-  {
-    id: "V-0401",
-    date: "2023-05-12",
-    reason: "Follow-up",
-    notes: "Lifestyle changes discussed",
-    doctor: "Dr. Smith",
-    vitals: { bp: "138/89", temp: "98.6°F", weight: "80kg" },
-  },
-  {
-    id: "V-0325",
-    date: "2023-04-08",
-    reason: "Emergency Visit",
-    notes: "Chest discomfort, EKG normal",
-    doctor: "Dr. Johnson",
-    vitals: { bp: "145/92", temp: "99.0°F", weight: "80kg" },
-  },
-  {
-    id: "V-0267",
-    date: "2023-03-15",
-    reason: "Routine Checkup",
-    notes: "Blood pressure monitoring",
-    doctor: "Dr. Smith",
-    vitals: { bp: "140/90", temp: "98.5°F", weight: "81kg" },
-  },
-  {
-    id: "V-0198",
-    date: "2023-02-20",
-    reason: "Follow-up",
-    notes: "Medication dosage adjustment",
-    doctor: "Dr. Smith",
-    vitals: { bp: "142/91", temp: "98.6°F", weight: "81kg" },
-  },
-  {
-    id: "V-0134",
-    date: "2023-01-18",
-    reason: "Initial Visit",
-    notes: "First consultation for hypertension",
-    doctor: "Dr. Smith",
-    vitals: { bp: "148/94", temp: "98.7°F", weight: "82kg" },
-  },
-];
-
-interface Visit {
-  id: string;
-  date: string;
-  reason: string;
-  notes: string;
-  doctor: string;
-  vitals: {
-    bp: string;
-    temp: string;
-    weight: string;
-  };
+interface TranscriptionSegment {
+  start: number;
+  end: number;
+  sentence: string;
+  speaker: string[];
 }
 
-interface Patient {
-  id: number;
+interface Vitals {
+  bp: string;
+  pulse: string;
+  temp: string;
+  resp: string;
+}
+
+interface SoapNotes {
+  subjective: string;
+  vitals: Vitals;
+  objective: string;
+  assessment: string[];
+  plan: string[];
+}
+
+interface VisitData {
+  id: string;
+  patientId: string;
+  date: string;
+  notes: SoapNotes;
+  transcription: TranscriptionSegment[];
+}
+
+interface PatientData {
+  id: string;
   name: string;
   age: number;
   gender: string;
   phone: string;
-  email: string;
-  address: string;
-  bloodGroup: string;
-  lastVisit: string;
-  condition: string;
-  allergies: string[];
-  emergencyContact: string;
-  emergencyContactName: string;
 }
 
-interface PaginationData {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-}
+export default function ViewPatientVisitDetails() {
+  // const { id: patientId, visitId } = useParams<{
+  //   id: string;
+  //   visitId: string;
+  // }>();
+  const { patientId, visitId } = {
+    patientId: "69b19bba814eee9e8418ac17",
+    visitId: "69c2e883279e19092ff8b680",
+  }; // Mock params for testing
+  const navigate = useNavigate();
+  const SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 
-// Debounce hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  const [visit, setVisit] = useState<VisitData | null>(null);
+  const [patient, setPatient] = useState<PatientData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showAiBanner, setShowAiBanner] = useState(true);
+
+  const [search, setSearch] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const escapeRegExp = (text: string) =>
+    text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const handleCopyNote = async () => {
+    if (!visit) return;
+
+    const soapJson = {
+      patientId: visit.patientId,
+      visitId: visit.id,
+      date: visit.date,
+      notes: visit.notes,
+    };
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(soapJson, null, 2));
+      setCopied(true);
+      toast.success("Note copied to clipboard!");
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Copy failed", err);
+      toast.error("Failed to copy note.");
+    }
+  };
 
   useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
+    if (!visitId || !patientId) return;
 
-  return debouncedValue;
-}
-
-export default function ViewPatientDetails() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [patient, setPatient] = useState<Patient | null>(null);
-  const [visits, setVisits] = useState<Visit[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [visitsLoading, setVisitsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery, 400);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [filterReason, setFilterReason] = useState<string>("all");
-
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState<PaginationData>({
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    itemsPerPage: 10,
-  });
-
-  const fetchPatientDetails = useCallback(
-    async (patientId: string | undefined) => {
+    const fetchData = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 400));
+        const visitRes = await fetch(`${SERVER_URL}/visits/${visitId}`, {
+          credentials: "include",
+        });
+        if (!visitRes.ok) throw new Error("Failed to fetch visit");
+        const visitData: VisitData = await visitRes.json();
+        setVisit(visitData);
 
-        // Replace with real API:
-        // const patientRes = await fetch(`/api/patients/${patientId}`);
-        // if (!patientRes.ok) throw new Error('Patient not found');
-        // const patientData = await patientRes.json();
-        // setPatient(patientData);
-
-        setPatient({ ...mockPatient, id: Number(patientId ?? mockPatient.id) });
-      } catch (err) {
-        setError("Failed to load patient details.");
-        console.error(err);
+        // Use patientId from the visit response — not the URL param (which may be mock data)
+        const patientRes = await fetch(
+          `${SERVER_URL}/patients/${visitData.patientId}`,
+          { credentials: "include" },
+        );
+        if (patientRes.ok) {
+          const patientData = await patientRes.json();
+          setPatient(patientData.patient);
+        }
+      } catch {
+        setError("Failed to load visit details.");
+        toast.error("Failed to load visit details.");
       } finally {
         setLoading(false);
       }
-    },
-    []
-  );
+    };
 
-  const fetchPatientVisits = useCallback(
-    async (
-      patientId: string | undefined,
-      search: string,
-      page: number,
-      reason: string,
-      sort: "asc" | "desc"
-    ) => {
-      setVisitsLoading(true);
-      setError(null);
+    fetchData();
+  }, [visitId, patientId, SERVER_URL]);
 
-      try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 400));
-
-        // Replace with real API:
-        // const visitsRes = await fetch(
-        //   `/api/patients/${patientId}/visits?search=${search}&page=${page}&limit=10&reason=${reason}&sort=${sort}`
-        // );
-        // if (!visitsRes.ok) throw new Error('Failed to fetch visits');
-        // const visitsData = await visitsRes.json();
-        // setVisits(visitsData.visits);
-        // setPagination(visitsData.pagination);
-
-        const itemsPerPage = 10;
-        let filtered = mockVisits.filter((v) => {
-          const q = search.toLowerCase();
-          return (
-            v.id.toLowerCase().includes(q) ||
-            v.date.includes(search) ||
-            v.reason.toLowerCase().includes(q)
-          );
-        });
-
-        // Filter by reason
-        if (reason !== "all") {
-          filtered = filtered.filter((v) =>
-            v.reason.toLowerCase().includes(reason.toLowerCase())
-          );
-        }
-
-        // Sort by date
-        filtered.sort((a, b) => {
-          const aDate = new Date(a.date).getTime();
-          const bDate = new Date(b.date).getTime();
-          return sort === "desc" ? bDate - aDate : aDate - bDate;
-        });
-
-        const totalItems = filtered.length;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-        const startIndex = (page - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const paginatedData = filtered.slice(startIndex, endIndex);
-
-        setVisits(paginatedData);
-        setPagination({
-          currentPage: page,
-          totalPages,
-          totalItems,
-          itemsPerPage,
-        });
-      } catch (err) {
-        setError("Failed to load visits.");
-        console.error(err);
-      } finally {
-        setVisitsLoading(false);
-      }
-    },
-    []
-  );
-
-  useEffect(() => {
-    fetchPatientDetails(id);
-  }, [id, fetchPatientDetails]);
-
-  useEffect(() => {
-    fetchPatientVisits(id, debouncedSearchQuery, currentPage, filterReason, sortOrder);
-  }, [id, debouncedSearchQuery, currentPage, filterReason, sortOrder, fetchPatientVisits]);
-
-  // Reset to page 1 when search or filter changes
-  useEffect(() => {
-    if (currentPage !== 1) {
-      setCurrentPage(1);
-    }
-  }, [debouncedSearchQuery, filterReason]);
-
-  const uniqueReasons = useMemo(() => {
-    return Array.from(new Set(mockVisits.map((v) => v.reason)));
-  }, []);
-
-  const handleBack = () => {
-    navigate("/doctor/patients");
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+
+  const isDoctor = (speaker: string[]) => {
+    const s = (speaker[0] ?? "").toLowerCase();
+    return s === "doctor" || s.includes("doctor") || s === "speaker_0";
   };
 
-  const handleNextPage = () => {
-    if (currentPage < pagination.totalPages) {
-      setCurrentPage(currentPage + 1);
+  const getSpeakerLabel = (speaker: string[]) =>
+    isDoctor(speaker) ? "DR" : "PT";
+
+  const parseAssessmentStatus = (item: string) => {
+    const idx = item.lastIndexOf(" - ");
+    if (idx !== -1) {
+      return { diagnosis: item.slice(0, idx), status: item.slice(idx + 3) };
     }
+    return { diagnosis: item, status: null };
   };
+
+  const getStatusColor = (status: string) => {
+    const s = status.toLowerCase().replace(/\.$/, "");
+    if (s === "improving") return "text-green-500";
+    if (s === "controlled" || s === "stable") return "text-blue-500";
+    if (s === "acute" || s === "active") return "text-orange-500";
+    return "text-gray-500";
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
+
+  if (error || !visit) {
+    return (
+      <div className="p-6">
+        <p className="text-red-500">{error ?? "Visit not found"}</p>
+        <Button variant="outline" className="mt-4" onClick={() => navigate(-1)}>
+          <ArrowLeft className="size-4 mr-2" /> Back
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBack}
-              className="h-8 w-8"
-            >
-              <ArrowLeft className="size-4" />
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold">Patient Details</h1>
-              <p className="text-gray-500 mt-1">
-                Overview and complete visit history
-              </p>
+    <div className="-m-6 flex flex-col" style={{ height: "100vh" }}>
+      {/* ── Patient Header ── */}
+      <div className="bg-white border-b dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-4">
+          {/* Avatar */}
+          <div className="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
+            {patient ? getInitials(patient.name) : "??"}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate(-1)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <ArrowLeft className="size-4" />
+              </button>
+              <h1 className="text-xl font-bold dark:text-white">
+                {patient?.name ?? "Patient"}
+              </h1>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white">
+                Active
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
+              {patient && (
+                <>
+                  <span>🗓 {patient.age}y</span>
+                  <span>•</span>
+                </>
+              )}
+              <span>🪪 ID: #{visit.patientId.slice(-6).toUpperCase()}</span>
+              <span>•</span>
+              <span>📋 Visit: {formatDate(visit.date)}</span>
             </div>
           </div>
-          {loading && <Loader2 className="size-6 animate-spin text-gray-400" />}
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {error}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs h-8"
+            onClick={handleCopyNote}
+          >
+            <Copy className="size-3.5" /> {copied ? "Copied" : "Copy Note"}
+          </Button>
+          <Button
+            size="sm"
+            className="gap-1.5 text-xs h-8 bg-blue-600 hover:bg-blue-700"
+          >
+            <Save className="size-3.5" /> Submit for Billing
+          </Button>
+        </div>
+      </div>
+
+      {/* ── Two-panel body ── */}
+      <div className="flex flex-1 min-h-0">
+        {/* ════ LEFT: TRANSCRIPT ════ */}
+        <div className="w-1/2 border-r dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900">
+          {/* Panel header */}
+          <div className="flex items-center justify-between px-5 py-3 border-b dark:border-slate-800 shrink-0">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 text-lg leading-none">≡</span>
+              <span className="text-xs font-semibold tracking-widest text-gray-500 dark:text-slate-400 uppercase">
+                Transcript
+              </span>
+            </div>
+            <span className="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400">
+              <CheckCircle2 className="size-3.5" />
+              Session complete
+            </span>
           </div>
-        )}
 
-        {/* Patient Summary Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="size-5" />
-              Patient Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {patient ? (
-              <div className="space-y-6">
-                {/* Basic Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Basic Details
-                    </h3>
-                    <div>
-                      <h2 className="text-2xl font-semibold">{patient.name}</h2>
-                      <div className="mt-2 flex items-center gap-2">
-                        <Badge variant="secondary">{patient.gender}</Badge>
-                        <Badge variant="secondary">{patient.age} years</Badge>
-                        <Badge variant="secondary">{patient.bloodGroup}</Badge>
-                      </div>
-                      <div className="mt-3">
-                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-                          {patient.condition}
-                        </Badge>
+          {/* Messages */}
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="px-5 py-4 space-y-4">
+              {visit.transcription.map((seg, idx) => {
+                const doc = isDoctor(seg.speaker);
+                return (
+                  <div key={idx} className="flex items-start gap-3">
+                    {/* Avatar + timestamp */}
+                    <div className="flex flex-col items-center gap-1 shrink-0 pt-0.5">
+                      <span className="text-[11px] font-mono text-teal-500 dark:text-teal-400">
+                        {formatTime(seg.start)}
+                      </span>
+                      <div
+                        className={`size-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                          doc
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-teal-100 text-teal-800"
+                        }`}
+                      >
+                        {getSpeakerLabel(seg.speaker)}
                       </div>
                     </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Contact Information
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Phone className="size-4 text-gray-400" />
-                        <span>{patient.phone}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Mail className="size-4 text-gray-400" />
-                        <span className="break-all">{patient.email}</span>
-                      </div>
-                      <div className="flex items-start gap-2 text-sm">
-                        <Activity className="size-4 text-gray-400 mt-0.5" />
-                        <span className="text-gray-600">{patient.address}</span>
-                      </div>
+                    {/* Bubble */}
+                    <div className="flex-1 bg-gray-50 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-slate-200 leading-relaxed border border-gray-100 dark:border-slate-700">
+                      {search.trim()
+                        ? seg.sentence
+                            .split(
+                              new RegExp(
+                                "(" + escapeRegExp(search.trim()) + ")",
+                                "gi",
+                              ),
+                            )
+                            .map((part, i) =>
+                              part.toLowerCase() ===
+                              search.trim().toLowerCase() ? (
+                                <span
+                                  key={i}
+                                  className="bg-blue-200 text-blue-900 px-1 rounded"
+                                >
+                                  {part}
+                                </span>
+                              ) : (
+                                part
+                              ),
+                            )
+                        : seg.sentence}
                     </div>
                   </div>
+                );
+              })}
 
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Medical Information
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="size-4 text-gray-400" />
-                        <span>
-                          Last Visit:{" "}
-                          <span className="font-medium">{patient.lastVisit}</span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <FileText className="size-4 text-gray-400" />
-                        <span>
-                          Patient ID:{" "}
-                          <span className="font-medium">#{patient.id}</span>
-                        </span>
-                      </div>
-                      <div className="text-sm">
-                        <span className="text-gray-500">Allergies: </span>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {patient.allergies.map((allergy) => (
-                            <Badge
-                              key={allergy}
-                              variant="destructive"
-                              className="text-xs"
-                            >
-                              {allergy}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
+              {/* End of conversation */}
+              <div className="flex items-center justify-center gap-2 pt-4 pb-2 text-xs text-gray-400 dark:text-slate-500">
+                <CheckCircle2 className="size-4" />
+                <span>End of conversation fetched from archive</span>
               </div>
-            ) : (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="size-8 animate-spin text-gray-400" />
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Visits Card */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="size-5" />
-                Visit History
-              </CardTitle>
-              <Badge variant="outline" className="text-sm">
-                {pagination.totalItems} Total Visits
-              </Badge>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Search and Filters */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search by visit ID, date (YYYY-MM-DD), or reason..."
-                  className="pl-10"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                {visitsLoading && (
-                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-5 text-gray-400 animate-spin" />
-                )}
+          </ScrollArea>
+
+          {/* Bottom search */}
+          <div className="px-5 py-3 border-t dark:border-slate-800 shrink-0">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-gray-400" />
+              <Input
+                placeholder="Search in transcript..."
+                className="pl-8 h-8 text-xs bg-gray-50 dark:bg-slate-800"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ════ RIGHT: SOAP NOTES ════ */}
+        <div className="w-1/2 flex flex-col bg-gray-50 dark:bg-slate-950">
+          {/* AI draft banner */}
+          {showAiBanner && (
+            <div className="flex items-center justify-between px-5 py-2.5 bg-blue-50 dark:bg-blue-950/40 border-b border-blue-100 dark:border-blue-900 shrink-0">
+              <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
+                <Sparkles className="size-3.5 text-blue-500 shrink-0" />
+                AI Draft generated from clinical transcript. Review and edit as
+                needed.
               </div>
-              <div className="flex gap-2">
-                <Select value={filterReason} onValueChange={setFilterReason}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by reason" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Reasons</SelectItem>
-                    {uniqueReasons.map((reason) => (
-                      <SelectItem key={reason} value={reason}>
-                        {reason}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="outline"
-                  size="default"
-                  onClick={() =>
-                    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
-                  }
+              <div className="flex items-center gap-3 text-xs shrink-0 ml-3">
+                <button className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                  Regenerate
+                </button>
+                <button
+                  className="text-gray-400 hover:underline"
+                  onClick={() => setShowAiBanner(false)}
                 >
-                  <ArrowUpDown className="size-4 mr-2" />
-                  {sortOrder === "desc" ? "Most Recent" : "Oldest First"}
-                </Button>
+                  Dismiss
+                </button>
               </div>
             </div>
+          )}
 
-            {/* Visits Table */}
-            <div className="border rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Visit ID</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Reason</TableHead>
-                    <TableHead>Doctor</TableHead>
-                    <TableHead>Vitals</TableHead>
-                    <TableHead>Notes</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {visitsLoading && visits.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="text-center py-8 text-gray-500"
-                      >
-                        <Loader2 className="size-6 animate-spin mx-auto mb-2" />
-                        Loading visits...
-                      </TableCell>
-                    </TableRow>
-                  ) : visits.length > 0 ? (
-                    visits.map((visit) => (
-                      <TableRow key={visit.id}>
-                        <TableCell className="font-medium">
-                          {visit.id}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="size-3 text-gray-400" />
-                            {visit.date}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{visit.reason}</Badge>
-                        </TableCell>
-                        <TableCell className="text-sm">{visit.doctor}</TableCell>
-                        <TableCell>
-                          <div className="text-xs space-y-0.5">
-                            <div>BP: {visit.vitals.bp}</div>
-                            <div>Temp: {visit.vitals.temp}</div>
-                            <div>Weight: {visit.vitals.weight}</div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="max-w-xs">
-                          <span className="text-sm text-gray-600 line-clamp-2">
-                            {visit.notes}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="text-center py-8 text-gray-500"
-                      >
-                        No visits found
-                        {(debouncedSearchQuery || filterReason !== "all") && (
-                          <span className="block mt-1 text-sm">
-                            Try adjusting your search or filters
-                          </span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            {pagination.totalItems > 0 && (
-              <div className="flex justify-between items-center pt-4">
-                <p className="text-sm text-gray-600">
-                  Showing{" "}
-                  {visits.length > 0
-                    ? (currentPage - 1) * pagination.itemsPerPage + 1
-                    : 0}{" "}
-                  to{" "}
-                  {Math.min(
-                    currentPage * pagination.itemsPerPage,
-                    pagination.totalItems
-                  )}{" "}
-                  of {pagination.totalItems} visits
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="px-5 py-4 space-y-3">
+              {/* ── SUBJECTIVE ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
+                      S
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Subjective
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                </div>
+                <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
+                  {visit.notes.subjective}
                 </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1 || visitsLoading}
-                  >
-                    Previous
-                  </Button>
-                  <div className="flex items-center gap-1">
-                    {Array.from(
-                      { length: pagination.totalPages },
-                      (_, i) => i + 1
-                    )
-                      .filter((page) => {
-                        // Show first page, last page, current page, and adjacent pages
-                        return (
-                          page === 1 ||
-                          page === pagination.totalPages ||
-                          Math.abs(page - currentPage) <= 1
-                        );
-                      })
-                      .map((page, index, array) => {
-                        // Add ellipsis
-                        const showEllipsisBefore =
-                          index > 0 && page - array[index - 1] > 1;
-                        return (
-                          <div key={page} className="flex items-center">
-                            {showEllipsisBefore && (
-                              <span className="px-2 text-gray-500">...</span>
-                            )}
-                            <Button
-                              variant={
-                                currentPage === page ? "default" : "outline"
-                              }
-                              size="sm"
-                              onClick={() => setCurrentPage(page)}
-                              disabled={visitsLoading}
-                            >
-                              {page}
-                            </Button>
-                          </div>
-                        );
-                      })}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleNextPage}
-                    disabled={
-                      currentPage === pagination.totalPages || visitsLoading
-                    }
-                  >
-                    Next
-                  </Button>
-                </div>
               </div>
-            )}
 
-            {/* Clear filter button */}
-            {filterReason !== "all" && (
-              <div className="flex justify-end">
-                <Button
-                  variant="link"
-                  size="sm"
-                  onClick={() => setFilterReason("all")}
-                  className="h-auto p-0"
-                >
-                  Clear filter
-                </Button>
+              {/* ── OBJECTIVE ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                      O
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Objective
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                </div>
+                {/* Vitals grid */}
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {(
+                    [
+                      { label: "BP", value: visit.notes.vitals.bp },
+                      { label: "PULSE", value: visit.notes.vitals.pulse },
+                      { label: "TEMP", value: visit.notes.vitals.temp },
+                      { label: "RESP", value: visit.notes.vitals.resp },
+                    ] as const
+                  ).map(({ label, value }) => (
+                    <div
+                      key={label}
+                      className="text-center bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-2.5 px-2"
+                    >
+                      <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wider">
+                        {label}
+                      </p>
+                      <p className="text-sm font-semibold text-gray-800 dark:text-slate-200 mt-0.5">
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
+                  {visit.notes.objective}
+                </p>
               </div>
-            )}
-          </CardContent>
-        </Card>
+
+              {/* ── ASSESSMENT ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                      A
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Assessment
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                </div>
+                <ul className="space-y-2">
+                  {visit.notes.assessment.map((item, idx) => {
+                    const { diagnosis, status } = parseAssessmentStatus(item);
+                    return (
+                      <li key={idx} className="text-sm">
+                        <span className="font-medium text-gray-800 dark:text-slate-200">
+                          {diagnosis}
+                        </span>
+                        {status && (
+                          <>
+                            <span className="text-gray-400"> - </span>
+                            <span
+                              className={`font-semibold ${getStatusColor(status)}`}
+                            >
+                              {status}
+                            </span>
+                          </>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              {/* ── PLAN ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                      P
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Plan
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
+                </div>
+                <ul className="space-y-2">
+                  {visit.notes.plan.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className={`text-sm leading-relaxed ${
+                        idx === 0
+                          ? "text-blue-600 dark:text-blue-400 font-medium"
+                          : "text-gray-700 dark:text-slate-300"
+                      }`}
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </ScrollArea>
+        </div>
       </div>
     </div>
   );

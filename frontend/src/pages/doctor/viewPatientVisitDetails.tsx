@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { toast } from "react-hot-toast";
 
 interface TranscriptionSegment {
   start: number;
@@ -51,7 +52,14 @@ interface PatientData {
 }
 
 export default function ViewPatientVisitDetails() {
-  const { id: patientId, visitId } = useParams<{ id: string; visitId: string }>();
+  // const { id: patientId, visitId } = useParams<{
+  //   id: string;
+  //   visitId: string;
+  // }>();
+  const { patientId, visitId } = {
+    patientId: "69b19bba814eee9e8418ac17",
+    visitId: "69c2e883279e19092ff8b680",
+  }; // Mock params for testing
   const navigate = useNavigate();
   const SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -60,8 +68,13 @@ export default function ViewPatientVisitDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAiBanner, setShowAiBanner] = useState(true);
-  const [copied, setCopied] = useState(false);
+
   const [search, setSearch] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const escapeRegExp = (text: string) =>
+    text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
   const handleCopyNote = async () => {
     if (!visit) return;
 
@@ -71,19 +84,14 @@ export default function ViewPatientVisitDetails() {
       date: visit.date,
       notes: visit.notes,
     };
-
     try {
-      await navigator.clipboard.writeText(
-        JSON.stringify(soapJson, null, 2)
-      );
-
+      await navigator.clipboard.writeText(JSON.stringify(soapJson, null, 2));
       setCopied(true);
-
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
+      toast.success("Note copied to clipboard!");
+      window.setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Copy failed", err);
+      toast.error("Failed to copy note.");
     }
   };
 
@@ -104,7 +112,7 @@ export default function ViewPatientVisitDetails() {
         // Use patientId from the visit response — not the URL param (which may be mock data)
         const patientRes = await fetch(
           `${SERVER_URL}/patients/${visitData.patientId}`,
-          { credentials: "include" }
+          { credentials: "include" },
         );
         if (patientRes.ok) {
           const patientData = await patientRes.json();
@@ -112,12 +120,11 @@ export default function ViewPatientVisitDetails() {
         }
       } catch {
         setError("Failed to load visit details.");
+        toast.error("Failed to load visit details.");
       } finally {
         setLoading(false);
       }
-    },
-    [],
-  );
+    };
 
     fetchData();
   }, [visitId, patientId, SERVER_URL]);
@@ -187,29 +194,74 @@ export default function ViewPatientVisitDetails() {
   }
 
   return (
-    <div className="-m-6 flex flex-col" style={{ height: "100vh" }}>
+    // <div className=" flex flex-col min-h-screen">
+    <div className="flex flex-col  gap-3 md:gap-4">
       {/* ── Patient Header ── */}
-      <div className="bg-white border-b dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
+      {/* <div className="bg-white rounded-2xl border-b dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex items-center justify-between shrink-0"> */}
+      <div className="bg-white rounded-xl md:rounded-2xl border-b dark:bg-slate-900 dark:border-slate-800 px-3 sm:px-4 md:px-6 py-3 md:py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 shrink-0">
+        {/* <div className="flex items-center gap-4"> */}
+        <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
+          {/* Avatar */}
+          <div className="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
+            {patient ? getInitials(patient.name) : "??"}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate(-1)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <ArrowLeft className="size-4" />
+              </button>
+              <h1 className="text-xl font-bold dark:text-white">
+                {patient?.name ?? "Patient"}
+              </h1>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white">
+                Active
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
+              {patient && (
+                <>
+                  <span>🗓 {patient.age}y</span>
+                  <span>•</span>
+                </>
+              )}
+              <span>🪪 ID: #{visit.patientId.slice(-6).toUpperCase()}</span>
+              <span>•</span>
+              <span>📋 Visit: {formatDate(visit.date)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-            className="h-8 w-8"
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs h-8"
+            onClick={handleCopyNote}
           >
-            <ArrowLeft className="size-4" />
+            <Copy className="size-3.5" /> {copied ? "Copied" : "Copy Note"}
+          </Button>
+          <Button
+            size="sm"
+            className="gap-1.5 text-xs h-8 bg-blue-600 hover:bg-blue-700"
+            onClick={() =>
+              toast("Submitted for billing! (not really, this is a demo)")
+            }
+          >
+            <Save className="size-3.5" /> Submit for Billing
           </Button>
         </div>
       </div>
 
       {/* ── Two-panel body ── */}
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 gap-4">
         {/* ════ LEFT: TRANSCRIPT ════ */}
-        <div className="w-1/2 border-r dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900">
+        <div className="w-1/2 rounded-2xl border-r dark:border-slate-800 flex flex-col bg-white dark:bg-slate-900">
           {/* Panel header */}
           <div className="flex items-center justify-between px-5 py-3 border-b dark:border-slate-800 shrink-0">
             <div className="flex items-center gap-2">
-              <span className="text-gray-400 text-lg leading-none">≡</span>
               <span className="text-xs font-semibold tracking-widest text-gray-500 dark:text-slate-400 uppercase">
                 Transcript
               </span>
@@ -233,26 +285,38 @@ export default function ViewPatientVisitDetails() {
                         {formatTime(seg.start)}
                       </span>
                       <div
-                        className={`size-7 rounded-full flex items-center justify-center text-[10px] font-bold ${doc
+                        className={`size-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                          doc
                             ? "bg-blue-100 text-blue-800"
                             : "bg-teal-100 text-teal-800"
-                          }`}
+                        }`}
                       >
                         {getSpeakerLabel(seg.speaker)}
                       </div>
                     </div>
                     {/* Bubble */}
-                    <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-slate-200 leading-relaxed border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition">
-                      {search
-                        ? seg.sentence.split(new RegExp(`(${search})`, "gi")).map((part, i) =>
-                          part.toLowerCase() === search.toLowerCase() ? (
-                            <span key={i} className="bg-blue-200 text-blue-900 px-1 rounded">
-                              {part}
-                            </span>
-                          ) : (
-                            part
-                          )
-                        )
+                    <div className="flex-1 bg-gray-50 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-slate-200 leading-relaxed border border-gray-100 dark:border-slate-700">
+                      {search.trim()
+                        ? seg.sentence
+                            .split(
+                              new RegExp(
+                                "(" + escapeRegExp(search.trim()) + ")",
+                                "gi",
+                              ),
+                            )
+                            .map((part, i) =>
+                              part.toLowerCase() ===
+                              search.trim().toLowerCase() ? (
+                                <span
+                                  key={i}
+                                  className="bg-blue-200 text-blue-900 px-1 rounded"
+                                >
+                                  {part}
+                                </span>
+                              ) : (
+                                part
+                              ),
+                            )
                         : seg.sentence}
                     </div>
                   </div>
@@ -281,54 +345,62 @@ export default function ViewPatientVisitDetails() {
           </div>
         </div>
 
-        {/* Patient & Visit Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="size-5" />
-              Patient & Visit Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500">
-                  Patient Details
-                </h3>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-xl font-semibold">{patient.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary">{patient.gender}</Badge>
-                      <Badge variant="secondary">{patient.age} years</Badge>
-                    </div>
-                    <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Subjective</span>
+        {/* ════ RIGHT: SOAP NOTES ════ */}
+        <div className="w-1/2 flex flex-col bg-gray-50 dark:bg-slate-950">
+          {/* AI draft banner */}
+          {showAiBanner && (
+            <div className="flex items-center justify-between px-5 py-2.5 bg-blue-50 dark:bg-blue-950/40 border-b border-blue-100 dark:border-blue-900 shrink-0">
+              <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
+                <Sparkles className="size-3.5 text-blue-500 shrink-0" />
+                AI Draft generated from clinical transcript. Review and edit as
+                needed.
+              </div>
+              <div className="flex items-center gap-3 text-xs shrink-0 ml-3">
+                <button className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                  Regenerate
+                </button>
+                <button
+                  className="text-gray-400 hover:underline"
+                  onClick={() => setShowAiBanner(false)}
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+
+          <ScrollArea className="flex-1 min-h-0">
+            <div className=" space-y-4">
+              {/* ── SUBJECTIVE ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
+                      S
+                    </span>
                   </div>
-                  <div className="h-px bg-gray-200 dark:bg-slate-700" />
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Subjective
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
                 <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
                   {visit.notes.subjective}
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500">
-                  Visit Details
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="size-4 text-gray-400" />
-                    <span>{formatDate(visit.date)}</span>
+              {/* ── OBJECTIVE ── */}
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                      O
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="size-4 text-gray-400" />
-                    <span>Duration: {visit.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Activity className="size-4 text-gray-400" />
-                    <span>Doctor: {visit.doctor}</span>
-                  </div>
-                  <div className="h-px bg-gray-200 dark:bg-slate-700" />
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Objective
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
                 {/* Vitals grid */}
                 <div className="grid grid-cols-4 gap-2 mb-4">
@@ -353,95 +425,25 @@ export default function ViewPatientVisitDetails() {
                     </div>
                   ))}
                 </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-
-          {/* SOAP Notes */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="size-5" />
-                SOAP Notes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[600px] pr-4">
-                <div className="space-y-6">
-                  {/* Subjective */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
-                        S
-                      </Badge>
-                      <h3 className="font-semibold">Subjective</h3>
-                    </div>
-                    <p className="text-sm text-gray-700 leading-relaxed">
-                      {visit.soap.subjective}
-                    </p>
-                  </div>
-
-                  <Separator />
-
-                  {/* Objective with Vitals */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-                        O
-                      </Badge>
-                      <h3 className="font-semibold">Objective</h3>
-                    </div>
-
-                    {/* Vitals */}
-                    <div className="mb-3 p-3 bg-green-300 rounded-lg border border-green-200">
-                      <h4 className="text-sm font-medium mb-2">Vital Signs</h4>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div>
-                          <span className="text-gray-600">BP:</span>{" "}
-                          <span className="font-medium">
-                            {visit.soap.vitals.bp}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Pulse:</span>{" "}
-                          <span className="font-medium">
-                            {visit.soap.vitals.pulse}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Temp:</span>{" "}
-                          <span className="font-medium">
-                            {visit.soap.vitals.temp}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Resp:</span>{" "}
-                          <span className="font-medium">
-                            {visit.soap.vitals.resp}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className="text-sm text-gray-700 leading-relaxed">
-                      {visit.soap.objective}
-                    </p>
-                  </div>
-
-                  <Separator />
+                <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
+                  {visit.notes.objective}
+                </p>
+              </div>
 
               {/* ── ASSESSMENT ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
-                      <span className="text-xs font-bold text-amber-600 dark:text-amber-400">A</span>
-                    </div>
-                    <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Assessment</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                      A
+                    </span>
                   </div>
-                  <div className="h-px bg-gray-200 dark:bg-slate-700" />
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Assessment
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-                <ul className="space-y-2 list-disc pl-5">
+                <ul className="space-y-2">
                   {visit.notes.assessment.map((item, idx) => {
                     const { diagnosis, status } = parseAssessmentStatus(item);
                     return (
@@ -467,23 +469,26 @@ export default function ViewPatientVisitDetails() {
 
               {/* ── PLAN ── */}
               <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="size-6 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
-                      <span className="text-xs font-bold text-green-600 dark:text-green-400">P</span>
-                    </div>
-                    <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">Plan</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="size-6 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                      P
+                    </span>
                   </div>
-                  <div className="h-px bg-gray-200 dark:bg-slate-700" />
+                  <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
+                    Plan
+                  </span>
+                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-                <ul className="space-y-2 list-disc pl-5">
+                <ul className="space-y-2">
                   {visit.notes.plan.map((item, idx) => (
                     <li
                       key={idx}
-                      className={`text-sm leading-relaxed ${idx === 0
+                      className={`text-sm leading-relaxed ${
+                        idx === 0
                           ? "text-blue-600 dark:text-blue-400 font-medium"
                           : "text-gray-700 dark:text-slate-300"
-                        }`}
+                      }`}
                     >
                       {item}
                     </li>
