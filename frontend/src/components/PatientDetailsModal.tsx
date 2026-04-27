@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
+import { CircleUserRound } from "lucide-react";
+import { Mic } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -267,12 +269,12 @@ export default function PatientDetailsModal({
           e.preventDefault(); // Prevent closing on Escape key
         }}
       >
-        <DialogHeader>
-          <DialogTitle className="text-blue-500 text-xl">
+        <DialogHeader className="pb-4 border-b">
+          <DialogTitle className="text-black text-xl font-semibold">
             Patient Details
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
-            Verify patient information before recording
+            Enter details to begin consultation recording
           </p>
         </DialogHeader>
 
@@ -287,13 +289,17 @@ export default function PatientDetailsModal({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>First Name *</Label>
-                <Input
-                  placeholder="First name"
-                  value={formData.firstName}
-                  onChange={(e) =>
-                    handleInputChange("firstName", e.target.value)
-                  }
-                />
+                <div className="relative">
+                  <CircleUserRound className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <Input
+                    placeholder="First name"
+                    className="pl-9"
+                    value={formData.firstName}
+                    onChange={(e) =>
+                      handleInputChange("firstName", e.target.value)
+                    }
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -332,6 +338,7 @@ export default function PatientDetailsModal({
                     <SelectItem value="male">Male</SelectItem>
                     <SelectItem value="female">Female</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -373,6 +380,7 @@ export default function PatientDetailsModal({
                   onClick={handleSearchPatient}
                   disabled={searchLoading}
                   variant="outline"
+                  className="hover:cursor-pointer hover: hover:bg-linear-to-b from-blue-50 to-blue-100"
                 >
                   {searchLoading ? "Searching..." : "Search"}
                 </Button>
@@ -426,7 +434,7 @@ export default function PatientDetailsModal({
           <Button
             variant="outline"
             onClick={handleClose}
-            className="hover:cursor-pointer"
+            className="hover:cursor-pointer hover:bg-linear-to-b from-blue-50 to-blue-100"
             disabled={isLoading}
           >
             Cancel
@@ -436,7 +444,13 @@ export default function PatientDetailsModal({
             onClick={handleStartRecording}
             disabled={isLoading || (tab === "existing" && !foundPatient)}
           >
-            {isLoading ? "Processing..." : "🎙 Start Recording"}
+            {isLoading ? (
+              "Processing..."
+            ) : (
+              <>
+                <Mic className="size-4" /> Start Recording
+              </>
+            )}
           </Button>
         </div>
       </DialogContent>
