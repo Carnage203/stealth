@@ -11,8 +11,6 @@ from api.createConsulation import router as create_consultation_router
 from api.patients.getPatientByPatientId import router as patient_detail_router
 from api.patients.getPatients import router as get_patients_router
 from api.patients.getVisitByVisitId import router as get_visits_by_visit_id_router
-from api.patients.regenerateSoap import router as regenerate_soap_router
-from api.patients import updateVisit as updateVisit
 from api.cloudinary.getCloudinarySignature import router as generate_signature
 from api.cloudinary.deleteCloudinaryFile import router as delete_cloudinary_file_router
 from api.session.getAllSessions import router as get_all_sessions_router
@@ -103,16 +101,6 @@ apiRouter.include_router(
     create_consultation_router,
     prefix='/visits',
     tags=['Visits']
-)
-apiRouter.include_router(
-    regenerate_soap_router,
-    prefix='/visits',
-    tags=['Visits']
-)
-apiRouter.include_router(
-    updateVisit.router,
-    prefix="/visits",
-    tags=["Visits"]
 )
 
 
