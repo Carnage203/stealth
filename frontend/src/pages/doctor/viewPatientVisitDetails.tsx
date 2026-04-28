@@ -68,9 +68,19 @@ export default function ViewPatientVisitDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAiBanner, setShowAiBanner] = useState(true);
+  const [regenerating, setRegenerating] = useState(false);
 
   const [search, setSearch] = useState("");
   const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState({
+  subjective: false,
+  objective: false,
+  assessment: false,
+  plan: false,
+});
+
+const [draft, setDraft] = useState<SoapNotes | null>(null);
+const [saving, setSaving] = useState(false);
 
   const escapeRegExp = (text: string) =>
     text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -94,6 +104,70 @@ export default function ViewPatientVisitDetails() {
       toast.error("Failed to copy note.");
     }
   };
+  const updateNotes = async (payload: Partial<SoapNotes>) => {
+  if (!visit || saving) return;
+
+  let cleanPayload: any = {};
+
+  // SUBJECTIVE
+  if (payload.subjective !== undefined && payload.subjective.trim() !== "") {
+    cleanPayload.subjective = payload.subjective;
+  }
+
+  // OBJECTIVE
+  if (payload.objective !== undefined && payload.objective.trim() !== "") {
+    cleanPayload.objective = payload.objective;
+  }
+
+  // ASSESSMENT
+  if (payload.assessment) {
+    const filtered = payload.assessment.filter((x) => x.trim() !== "");
+    if (filtered.length > 0) cleanPayload.assessment = filtered;
+  }
+
+  // PLAN
+  if (payload.plan) {
+    const filtered = payload.plan.filter((x) => x.trim() !== "");
+    if (filtered.length > 0) cleanPayload.plan = filtered;
+  }
+
+  // VITALS (must be complete)
+  if (payload.vitals) {
+    cleanPayload.vitals = {
+      bp: payload.vitals.bp || "Not recorded",
+      pulse: payload.vitals.pulse || "Not recorded",
+      temp: payload.vitals.temp || "Not recorded",
+      resp: payload.vitals.resp || "Not recorded",
+    };
+  }
+
+  try {
+    setSaving(true);
+
+    const res = await fetch(`${SERVER_URL}/visits/${visit.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(cleanPayload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      console.error("BACKEND ERROR:", err);
+      throw new Error();
+    }
+
+    setVisit((prev) =>
+      prev ? { ...prev, notes: { ...prev.notes, ...cleanPayload } } : prev
+    );
+
+    toast.success("Saved");
+  } catch {
+    toast.error("Update failed");
+  } finally {
+    setSaving(false);
+  }
+};
 
   useEffect(() => {
     if (!visitId || !patientId) return;
@@ -128,6 +202,11 @@ export default function ViewPatientVisitDetails() {
 
     fetchData();
   }, [visitId, patientId, SERVER_URL]);
+  useEffect(() => {
+    if (visit?.notes) {
+      setDraft(visit.notes);
+    }
+  }, [visit]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -153,6 +232,46 @@ export default function ViewPatientVisitDetails() {
   const isDoctor = (speaker: string[]) => {
     const s = (speaker[0] ?? "").toLowerCase();
     return s === "doctor" || s.includes("doctor") || s === "speaker_0";
+  };
+
+  const getCookie = (name: string) => {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    if (match) return decodeURIComponent(match[2]);
+    return null;
+  };
+
+  const regenerateSoap = async () => {
+    if (!visit || regenerating) return;
+    setRegenerating(true);
+    try {
+      const csrf = getCookie('csrf_token') || '';
+      const res = await fetch(`${SERVER_URL}/visits/${visit.id}/regenerate-soap`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrf,
+        },
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || 'Regenerate failed');
+      }
+
+      const body = await res.json();
+      if (body.notes) {
+        setVisit((v) => (v ? { ...v, notes: body.notes } : v));
+        toast.success('SOAP regenerated');
+      } else {
+        toast.success('SOAP regenerated');
+      }
+    } catch (err: any) {
+      console.error('Regenerate error', err);
+      toast.error(err?.message || 'Failed to regenerate SOAP');
+    } finally {
+      setRegenerating(false);
+    }
   };
 
   const getSpeakerLabel = (speaker: string[]) =>
@@ -356,8 +475,12 @@ export default function ViewPatientVisitDetails() {
                 needed.
               </div>
               <div className="flex items-center gap-3 text-xs shrink-0 ml-3">
-                <button className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-                  Regenerate
+                <button
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                  onClick={regenerateSoap}
+                  disabled={regenerating}
+                >
+                  {regenerating ? 'Regenerating...' : 'Regenerate'}
                 </button>
                 <button
                   className="text-gray-400 hover:underline"
@@ -384,9 +507,37 @@ export default function ViewPatientVisitDetails() {
                   </span>
                   <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-                <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
-                  {visit.notes.subjective}
-                </p>
+               
+                  <div className="flex justify-end mb-2">
+                      <button type="button" onClick={() => setEditing({ ...editing, subjective: true })}>✏️</button>
+                    </div>
+
+                    {editing.subjective ? (
+                      <>
+                        <textarea
+                          className="w-full border rounded p-2 text-sm"
+                          value={draft?.subjective || ""}
+                          onChange={(e) =>
+                            setDraft((p) => p && { ...p, subjective: e.target.value })
+                          }
+                        />
+                        <button
+                          onClick={() => {
+                            if (draft?.subjective?.trim()) {
+                                updateNotes({ subjective: draft.subjective });
+                            }
+                            setEditing({ ...editing, subjective: false });
+                          }}
+                        >
+                          ✅
+                        </button>
+                      </>
+                    ) : (
+                      <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
+                        {visit.notes.subjective}
+                      </p>
+                    )}
+
               </div>
 
               {/* ── OBJECTIVE ── */}
@@ -425,9 +576,40 @@ export default function ViewPatientVisitDetails() {
                     </div>
                   ))}
                 </div>
-                <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
-                  {visit.notes.objective}
-                </p>
+                  
+                  <div className="flex justify-end mb-2">
+                        <button type="button" onClick={() => setEditing({ ...editing, objective: true })}>✏️</button>
+                      </div>
+
+                      {editing.objective ? (
+                        <>
+                          <textarea
+                            className="w-full border rounded p-2 text-sm"
+                            value={draft?.objective || ""}
+                            onChange={(e) =>
+                              setDraft((p) => p && { ...p, objective: e.target.value })
+                            }
+                          />
+
+                          <button
+                            onClick={() => {
+                              if (draft?.objective?.trim()) {
+                                updateNotes({
+                                  objective: draft.objective
+                                });
+                              }
+                              setEditing({ ...editing, objective: false });
+                            }}
+                          >
+                            ✅
+                          </button>
+                        </>
+                      ) : (
+                        <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
+                          {visit.notes.objective}
+                        </p>
+                      )}
+
               </div>
 
               {/* ── ASSESSMENT ── */}
@@ -443,28 +625,43 @@ export default function ViewPatientVisitDetails() {
                   </span>
                   <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-                <ul className="space-y-2 list-disc list-inside">
-                  {visit.notes.assessment.map((item, idx) => {
-                    const { diagnosis, status } = parseAssessmentStatus(item);
-                    return (
-                      <li key={idx} className="text-sm">
-                        <span className="font-medium text-gray-800 dark:text-slate-200">
-                          {diagnosis}
-                        </span>
-                        {status && (
+                      
+                      <div className="flex justify-end mb-2">
+                          <button type="button" onClick={() => setEditing({ ...editing, assessment: true })}>✏️</button>
+                        </div>
+
+                        {editing.assessment ? (
                           <>
-                            <span className="text-gray-400"> - </span>
-                            <span
-                              className={`font-semibold ${getStatusColor(status)}`}
+                            <textarea
+                              className="w-full border rounded p-2 text-sm"
+                              value={draft?.assessment?.join("\n") || ""}
+                              onChange={(e) =>
+                                setDraft((p) =>
+                                  p && { ...p, assessment: e.target.value.split("\n") }
+                                )
+                              }
+                            />
+
+                            <button
+                              onClick={() => {
+                                const filtered = draft?.assessment?.filter((x) => x.trim() !== "");
+                                if (filtered && filtered.length > 0) {
+                                  updateNotes({ assessment: filtered });
+                                }
+                                setEditing({ ...editing, assessment: false });
+                              }}
                             >
-                              {status}
-                            </span>
+                              ✅
+                            </button>
                           </>
+                        ) : (
+                          <ul className="space-y-2 list-disc list-inside">
+                            {visit.notes.assessment.map((item, idx) => (
+                              <li key={idx}>{item}</li>
+                            ))}
+                          </ul>
                         )}
-                      </li>
-                    );
-                  })}
-                </ul>
+
               </div>
 
               {/* ── PLAN ── */}
@@ -480,20 +677,43 @@ export default function ViewPatientVisitDetails() {
                   </span>
                   <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-                <ul className="space-y-2 list-disc list-inside">
-                  {visit.notes.plan.map((item, idx) => (
-                    <li
-                      key={idx}
-                      className={`text-sm leading-relaxed ${
-                        idx === 0
-                          ? "text-blue-600 dark:text-blue-400 font-medium"
-                          : "text-gray-700 dark:text-slate-300"
-                      }`}
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                        
+                        <div className="flex justify-end mb-2">
+                              <button type="button"onClick={() => setEditing({ ...editing, plan: true })}>✏️</button>
+                            </div>
+
+                            {editing.plan ? (
+                              <>
+                                <textarea
+                                  className="w-full border rounded p-2 text-sm"
+                                  value={draft?.plan?.join("\n") || ""}
+                                  onChange={(e) =>
+                                    setDraft((p) =>
+                                      p && { ...p, plan: e.target.value.split("\n") }
+                                    )
+                                  }
+                                />
+
+                                <button
+                                  onClick={() => {
+                                    const filtered = draft?.plan?.filter((x) => x.trim() !== "");
+                                    if (filtered && filtered.length > 0) {
+                                      updateNotes({ plan: filtered });
+                                    }
+                                    setEditing({ ...editing, plan: false });
+                                  }}
+                                >
+                                  ✅
+                                </button>
+                              </>
+                            ) : (
+                              <ul className="space-y-2 list-disc list-inside">
+                                {visit.notes.plan.map((item, idx) => (
+                                  <li key={idx}>{item}</li>
+                                ))}
+                              </ul>
+                            )}
+                        
               </div>
             </div>
           </ScrollArea>
@@ -502,3 +722,4 @@ export default function ViewPatientVisitDetails() {
     </div>
   );
 }
+
