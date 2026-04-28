@@ -57,17 +57,10 @@ class CompleteProfileRequest(BaseModel):
     token : str
 
 class SoapVitals(BaseModel):
-    bp: Optional[str] = None
-    pulse: Optional[str] = None
-    temp: Optional[str] = None
-    resp: Optional[str] = None
-
-class SoapNotesUpdate(BaseModel):
-    subjective: Optional[str] = None
-    objective: Optional[str] = None
-    assessment: Optional[List[str]] = None
-    plan: Optional[List[str]] = None
-    vitals: Optional[SoapVitals] = None
+    bp: str = Field(default="Not recorded", description="Blood pressure (e.g. '120/80')")
+    pulse: str = Field(default="Not recorded", description="Heart rate (e.g. '72 bpm')")
+    temp: str = Field(default="Not recorded", description="Temperature (e.g. '98.4 F')")
+    resp: str = Field(default="Not recorded", description="Respiratory rate (e.g. '16')")
 
 class LLMSoapSchema(BaseModel):
     subjective: str = Field(..., description="Narrative summary of patient complaints and history")
