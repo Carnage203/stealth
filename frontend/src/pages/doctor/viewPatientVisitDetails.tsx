@@ -194,12 +194,11 @@ export default function ViewPatientVisitDetails() {
   }
 
   return (
-    // <div className=" flex flex-col min-h-screen">
-    <div className="flex flex-col -m-6 h-[calc(100%+3rem)] overflow-hidden">
+    
+    <div className="flex flex-col h-[calc(100%+3rem)] overflow-hidden">
       {/* ── Patient Header ── */}
-      {/* <div className="bg-white rounded-2xl border-b dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex items-center justify-between shrink-0"> */}
       <div className="bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 px-3 sm:px-4 md:px-6 py-3 md:py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 shrink-0">
-        {/* <div className="flex items-center gap-4"> */}
+      
         <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
           {/* Avatar */}
           <div className="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg shrink-0">

@@ -22,6 +22,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -581,7 +588,6 @@ function handeleDelete(e: React.MouseEvent, patientId: number) {
 }
 
 function exportPatientsToCSV(patients: Patient[]) {
-  
   if (patients.length === 0) {
     toast.error("No patients to export");
     return;
@@ -646,6 +652,8 @@ export default function Patients() {
 
   const debouncedSearch = useDebounce(searchQuery, 400);
   const [open, setOpen] = useState(false);
+  const [filterType, setFilterType] = useState<"age" | "visits" | "lastVisit" | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const fetchPatients = useCallback(async (page: number, search: string) => {
     setLoading(true);
@@ -654,7 +662,7 @@ export default function Patients() {
       await new Promise((r) => setTimeout(r, 350));
 
       const itemsPerPage = 10;
-      const filtered = search
+      let filtered = search
         ? mockPatients.filter(
             (p) =>
               p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -662,6 +670,25 @@ export default function Patients() {
               p.phone.includes(search),
           )
         : mockPatients;
+
+      // Apply filter and sort
+      if (filterType === "age") {
+        filtered = [...filtered].sort((a, b) =>
+          sortOrder === "asc" ? a.age - b.age : b.age - a.age,
+        );
+      } else if (filterType === "visits") {
+        filtered = [...filtered].sort((a, b) => {
+          const aVisits = a.totalVisits || 0;
+          const bVisits = b.totalVisits || 0;
+          return sortOrder === "asc" ? aVisits - bVisits : bVisits - aVisits;
+        });
+      } else if (filterType === "lastVisit") {
+        filtered = [...filtered].sort((a, b) => {
+          const aDate = new Date(a.lastVisit).getTime();
+          const bDate = new Date(b.lastVisit).getTime();
+          return sortOrder === "asc" ? aDate - bDate : bDate - aDate;
+        });
+      }
 
       const totalItems = filtered.length;
       const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
@@ -680,7 +707,7 @@ export default function Patients() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filterType, sortOrder]);
 
   useEffect(() => {
     fetchPatients(currentPage, debouncedSearch);
@@ -716,29 +743,82 @@ export default function Patients() {
   );
 
   return (
-    <div className="min-h-screen lg:p-6">
+    <div className="min-h-screen">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-        .patients-root { font-family: 'DM Sans', sans-serif; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');        .patients-root { font-family: 'Inter', sans-serif; }
         .fade-row { animation: fadeUp .25s ease both; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
         .row-hover:hover { background: #f8faff !important; }
       `}</style>
 
-      <div className="patients-root max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-bold text-black">Patient Directory</h1>
-            <p className="text-slate-500 mt-1 text-sm">
-              Manage and monitor your entire patient roster
-            </p>
+      <div className="bg-white border border-slate-100 shadow-sm px-5 py-3.5">
+        <div className="flex gap-3 items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              placeholder="Search by name, email or phone…"
+              className="pl-10 pr-10 h-9 rounded-xl border-slate-200 text-sm focus:ring-2 focus:ring-blue-100"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {loading && (
+              <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 animate-spin" />
+            )}
+            {!loading && searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="hover:cursor-pointer absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-4 h-4 " />
+              </button>
+            )}
           </div>
+
+          <Select
+            value={filterType || ""}
+            onValueChange={(value) => {
+              if (value === "clear") {
+                setFilterType(null);
+                setSortOrder("desc");
+              } else if (value) {
+                const filterMap: Record<string, "age" | "visits" | "lastVisit"> = {
+                  age: "age",
+                  visits: "visits",
+                  lastVisit: "lastVisit",
+                };
+                setFilterType(filterMap[value]);
+                if (value === "age") setSortOrder("asc");
+                else setSortOrder("desc");
+              }
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-40 h-15 border-slate-200 text-sm">
+              <SelectValue placeholder="Filter by..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="age">Age</SelectItem>
+              <SelectItem value="visits">Most Visits</SelectItem>
+              <SelectItem value="lastVisit">Last Visit</SelectItem>
+              <SelectItem value="clear">Clear Filter</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Filter menu removed - using select component instead */}
+
+          {/* <Button
+              variant="outline"
+              className="gap-2 px-4 h-10 rounded-xl border-slate-200 text-sm font-medium text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-colors"
+            >
+              <Filter className="w-4 h-4" /> Filter
+            </Button> */}
+
           <div className="flex items-center gap-2 self-start sm:self-auto sm:ml-auto">
             <Button
               onClick={() => setOpen(true)}
               className="hover:cursor-pointer"
             >
-              <Plus className="w-4 h-4" /> Add Patient
+              <Plus className="w-4 h-4" /> New Patient
             </Button>
             <Button
               className="hover:cursor-pointer"
@@ -748,9 +828,54 @@ export default function Patients() {
               Export
             </Button>
           </div>
+        </div>
+
+        {/* Active search chip */}
+        {(debouncedSearch || filterType) && (
+          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 flex-wrap">
+            {debouncedSearch && (
+              <>
+                <span>Results for</span>
+                <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 font-medium px-2 py-0.5 rounded-full">
+                  "{debouncedSearch}"
+                  <button onClick={() => setSearchQuery("")}>
+                    <X className="w-3 h-3 hover:cursor-pointer" />
+                  </button>
+                </span>
+              </>
+            )}
+            {filterType && (
+              <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 font-medium px-2 py-0.5 rounded-full">
+                {filterType === "age" && "Sorted by Age"}
+                {filterType === "visits" && "Sorted by Most Visits"}
+                {filterType === "lastVisit" && "Sorted by Last Visit"}
+                <button onClick={() => { setFilterType(null); setCurrentPage(1); }}>
+                  <X className="w-3 h-3 hover:cursor-pointer" />
+                </button>
+              </span>
+            )}
+            {debouncedSearch && <span>— {pagination.totalItems} found</span>}
+          </div>
+        )}
+      </div>
+
+      <div className="patients-root lg:p-4 mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            {/* <h1 className="text-4xl font-extrabold text-black">Patient Directory</h1> */}
+            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
+              Patient Directory
+            </h1>
+            <p className="text-slate-500 mt-1 text-sm">
+              Manage and monitor your entire patient roster
+            </p>
+          </div>
+
           <PatientDetailsModal open={open} onClose={() => setOpen(false)} />
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+        {/* Patients Stats -- this will be used in dashboard */}
+        {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             icon={Users}
             label="Total Patients"
@@ -779,52 +904,7 @@ export default function Patients() {
             sub="Last 2 weeks"
             color="bg-emerald-50 text-emerald-600"
           />
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4">
-          <div className="flex gap-3 items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input
-                placeholder="Search by name, email or phone…"
-                className="pl-10 pr-10 h-10 rounded-xl border-slate-200 text-sm focus:ring-2 focus:ring-blue-100"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {loading && (
-                <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 animate-spin" />
-              )}
-              {!loading && searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-            <Button
-              variant="outline"
-              className="gap-2 px-4 h-10 rounded-xl border-slate-200 text-sm font-medium text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-colors"
-            >
-              <Filter className="w-4 h-4" /> Filter
-            </Button>
-          </div>
-
-          {/* Active search chip */}
-          {debouncedSearch && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
-              <span>Results for</span>
-              <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 font-medium px-2 py-0.5 rounded-full">
-                "{debouncedSearch}"
-                <button onClick={() => setSearchQuery("")}>
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-              <span>— {pagination.totalItems} found</span>
-            </div>
-          )}
-        </div>
+        </div> */}
 
         {error && (
           <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
@@ -850,12 +930,15 @@ export default function Patients() {
                   Contact
                 </TableHead>
                 <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Total Visits
+                </TableHead>
+                <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Last Visit
                 </TableHead>
                 {/* <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                       Condition
                     </TableHead> */}
-                <TableHead>Total Visits</TableHead>
+
                 <TableHead className="text-xs font-semibold text-slate-500 uppercase tracking-wider text-right pr-5">
                   Delete
                 </TableHead>
@@ -935,14 +1018,6 @@ export default function Patients() {
                       </div>
                     </TableCell>
 
-                    {/* Last visit */}
-                    <TableCell>
-                      <div className="flex items-center gap-1.5 text-sm">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {fmtDate(patient.lastVisit)}
-                      </div>
-                    </TableCell>
-
                     {/* Condition badge */}
                     {/* <TableCell>
                       <ConditionBadge condition={patient.condition} />
@@ -952,6 +1027,14 @@ export default function Patients() {
                       <div className="flex items-center gap-1.5 text-sm">
                         <Activity className="w-3.5 h-3.5" />
                         {patient.totalVisits ?? 0} visits
+                      </div>
+                    </TableCell>
+
+                    {/* Last visit */}
+                    <TableCell>
+                      <div className="flex items-center gap-1.5 text-sm">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {fmtDate(patient.lastVisit)}
                       </div>
                     </TableCell>
 
