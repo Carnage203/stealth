@@ -195,7 +195,7 @@ export default function ViewPatientVisitDetails() {
 
   return (
     
-    <div className="flex flex-col h-[calc(100%+3rem)] overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* ── Patient Header ── */}
       <div className="bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 px-3 sm:px-4 md:px-6 py-3 md:py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 shrink-0">
       
