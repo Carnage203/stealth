@@ -7,6 +7,7 @@ import {
   Search,
   CheckCircle2,
   Sparkles,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -81,6 +82,15 @@ export default function ViewPatientVisitDetails() {
 
 const [draft, setDraft] = useState<SoapNotes | null>(null);
 const [saving, setSaving] = useState(false);
+const editButtonClass =
+  "absolute right-5 top-3 inline-flex size-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-100 hover:text-blue-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-blue-400";
+const editTextareaClass =
+  "min-h-44 w-full resize-y rounded-lg border border-gray-200 p-3 text-sm leading-relaxed text-gray-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:ring-blue-950";
+const editActionsClass = "flex justify-end gap-2 pt-3";
+const cancelEditButtonClass =
+  "h-9 rounded-md border border-gray-200 bg-white px-4 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800";
+const doneEditButtonClass =
+  "h-9 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60";
 
   const escapeRegExp = (text: string) =>
     text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -495,8 +505,16 @@ const [saving, setSaving] = useState(false);
           <ScrollArea className="flex-1 min-h-0">
             <div className="space-y-4 p-4">
               {/* ── SUBJECTIVE ── */}
-              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-800 shadow-sm">
+                <button
+                  type="button"
+                  className={editButtonClass}
+                  aria-label="Edit subjective note"
+                  onClick={() => setEditing({ ...editing, subjective: true })}
+                >
+                  <Pencil className="size-4" />
+                </button>
+                <div className="flex items-center gap-2 border-b border-gray-100 dark:border-slate-800 px-5 py-5 pr-14">
                   <div className="size-6 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
                     <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
                       S
@@ -505,44 +523,65 @@ const [saving, setSaving] = useState(false);
                   <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
                     Subjective
                   </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-               
-                  <div className="flex justify-end mb-2">
-                      <button type="button" onClick={() => setEditing({ ...editing, subjective: true })}>✏️</button>
-                    </div>
-
+                <div className="p-5">
                     {editing.subjective ? (
                       <>
                         <textarea
-                          className="w-full border rounded p-2 text-sm"
+                          className={editTextareaClass}
                           value={draft?.subjective || ""}
                           onChange={(e) =>
                             setDraft((p) => p && { ...p, subjective: e.target.value })
                           }
                         />
-                        <button
-                          onClick={() => {
-                            if (draft?.subjective?.trim()) {
-                                updateNotes({ subjective: draft.subjective });
-                            }
-                            setEditing({ ...editing, subjective: false });
-                          }}
-                        >
-                          ✅
-                        </button>
+                        <div className={editActionsClass}>
+                          <button
+                            type="button"
+                            className={cancelEditButtonClass}
+                            onClick={() => {
+                              setDraft((p) =>
+                                p ? { ...p, subjective: visit.notes.subjective } : p
+                              );
+                              setEditing({ ...editing, subjective: false });
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className={doneEditButtonClass}
+                            disabled={saving}
+                            onClick={() => {
+                              if (draft?.subjective?.trim()) {
+                                  updateNotes({ subjective: draft.subjective });
+                              }
+                              setEditing({ ...editing, subjective: false });
+                            }}
+                          >
+                            Done
+                          </button>
+                        </div>
                       </>
                     ) : (
                       <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
                         {visit.notes.subjective}
                       </p>
                     )}
+                </div>
 
               </div>
 
               {/* ── OBJECTIVE ── */}
-              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-800 shadow-sm">
+                <button
+                  type="button"
+                  className={editButtonClass}
+                  aria-label="Edit objective note"
+                  onClick={() => setEditing({ ...editing, objective: true })}
+                >
+                  <Pencil className="size-4" />
+                </button>
+                <div className="flex items-center gap-2 border-b border-gray-100 dark:border-slate-800 px-5 py-5 pr-14">
                   <div className="size-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
                     <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
                       O
@@ -551,8 +590,8 @@ const [saving, setSaving] = useState(false);
                   <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
                     Objective
                   </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
+                <div className="p-5">
                 {/* Vitals grid */}
                 <div className="grid grid-cols-4 gap-2 mb-4">
                   {(
@@ -577,44 +616,66 @@ const [saving, setSaving] = useState(false);
                   ))}
                 </div>
                   
-                  <div className="flex justify-end mb-2">
-                        <button type="button" onClick={() => setEditing({ ...editing, objective: true })}>✏️</button>
-                      </div>
-
                       {editing.objective ? (
                         <>
                           <textarea
-                            className="w-full border rounded p-2 text-sm"
+                            className={editTextareaClass}
                             value={draft?.objective || ""}
                             onChange={(e) =>
                               setDraft((p) => p && { ...p, objective: e.target.value })
                             }
                           />
 
-                          <button
-                            onClick={() => {
-                              if (draft?.objective?.trim()) {
-                                updateNotes({
-                                  objective: draft.objective
-                                });
-                              }
-                              setEditing({ ...editing, objective: false });
-                            }}
-                          >
-                            ✅
-                          </button>
+                          <div className={editActionsClass}>
+                            <button
+                              type="button"
+                              className={cancelEditButtonClass}
+                              onClick={() => {
+                                setDraft((p) =>
+                                  p ? { ...p, objective: visit.notes.objective } : p
+                                );
+                                setEditing({ ...editing, objective: false });
+                              }}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              className={doneEditButtonClass}
+                              disabled={saving}
+                              onClick={() => {
+                                if (draft?.objective?.trim()) {
+                                  updateNotes({
+                                    objective: draft.objective
+                                  });
+                                }
+                                setEditing({ ...editing, objective: false });
+                              }}
+                            >
+                              Done
+                            </button>
+                          </div>
                         </>
                       ) : (
                         <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">
-                          {visit.notes.objective}
-                        </p>
-                      )}
+                        {visit.notes.objective}
+                      </p>
+                    )}
+                </div>
 
               </div>
 
               {/* ── ASSESSMENT ── */}
-              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-800 shadow-sm">
+                <button
+                  type="button"
+                  className={editButtonClass}
+                  aria-label="Edit assessment note"
+                  onClick={() => setEditing({ ...editing, assessment: true })}
+                >
+                  <Pencil className="size-4" />
+                </button>
+                <div className="flex items-center gap-2 border-b border-gray-100 dark:border-slate-800 px-5 py-5 pr-14">
                   <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
                     <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
                       A
@@ -623,17 +684,12 @@ const [saving, setSaving] = useState(false);
                   <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
                     Assessment
                   </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-                      
-                      <div className="flex justify-end mb-2">
-                          <button type="button" onClick={() => setEditing({ ...editing, assessment: true })}>✏️</button>
-                        </div>
-
+                <div className="p-5">
                         {editing.assessment ? (
                           <>
                             <textarea
-                              className="w-full border rounded p-2 text-sm"
+                              className={editTextareaClass}
                               value={draft?.assessment?.join("\n") || ""}
                               onChange={(e) =>
                                 setDraft((p) =>
@@ -642,17 +698,34 @@ const [saving, setSaving] = useState(false);
                               }
                             />
 
-                            <button
-                              onClick={() => {
-                                const filtered = draft?.assessment?.filter((x) => x.trim() !== "");
-                                if (filtered && filtered.length > 0) {
-                                  updateNotes({ assessment: filtered });
-                                }
-                                setEditing({ ...editing, assessment: false });
-                              }}
-                            >
-                              ✅
-                            </button>
+                            <div className={editActionsClass}>
+                              <button
+                                type="button"
+                                className={cancelEditButtonClass}
+                                onClick={() => {
+                                  setDraft((p) =>
+                                    p ? { ...p, assessment: visit.notes.assessment } : p
+                                  );
+                                  setEditing({ ...editing, assessment: false });
+                                }}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="button"
+                                className={doneEditButtonClass}
+                                disabled={saving}
+                                onClick={() => {
+                                  const filtered = draft?.assessment?.filter((x) => x.trim() !== "");
+                                  if (filtered && filtered.length > 0) {
+                                    updateNotes({ assessment: filtered });
+                                  }
+                                  setEditing({ ...editing, assessment: false });
+                                }}
+                              >
+                                Done
+                              </button>
+                            </div>
                           </>
                         ) : (
                           <ul className="space-y-2 list-disc list-inside">
@@ -661,12 +734,21 @@ const [saving, setSaving] = useState(false);
                             ))}
                           </ul>
                         )}
+                </div>
 
               </div>
 
               {/* ── PLAN ── */}
-              <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="relative overflow-hidden bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-800 shadow-sm">
+                <button
+                  type="button"
+                  className={editButtonClass}
+                  aria-label="Edit plan note"
+                  onClick={() => setEditing({ ...editing, plan: true })}
+                >
+                  <Pencil className="size-4" />
+                </button>
+                <div className="flex items-center gap-2 border-b border-gray-100 dark:border-slate-800 px-5 py-5 pr-14">
                   <div className="size-6 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
                     <span className="text-xs font-bold text-green-600 dark:text-green-400">
                       P
@@ -675,17 +757,12 @@ const [saving, setSaving] = useState(false);
                   <span className="text-xs font-bold tracking-widest text-gray-600 dark:text-slate-400 uppercase">
                     Plan
                   </span>
-                  <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700 ml-1" />
                 </div>
-                        
-                        <div className="flex justify-end mb-2">
-                              <button type="button"onClick={() => setEditing({ ...editing, plan: true })}>✏️</button>
-                            </div>
-
+                <div className="p-5">
                             {editing.plan ? (
                               <>
                                 <textarea
-                                  className="w-full border rounded p-2 text-sm"
+                                  className={editTextareaClass}
                                   value={draft?.plan?.join("\n") || ""}
                                   onChange={(e) =>
                                     setDraft((p) =>
@@ -694,17 +771,34 @@ const [saving, setSaving] = useState(false);
                                   }
                                 />
 
-                                <button
-                                  onClick={() => {
-                                    const filtered = draft?.plan?.filter((x) => x.trim() !== "");
-                                    if (filtered && filtered.length > 0) {
-                                      updateNotes({ plan: filtered });
-                                    }
-                                    setEditing({ ...editing, plan: false });
-                                  }}
-                                >
-                                  ✅
-                                </button>
+                                <div className={editActionsClass}>
+                                  <button
+                                    type="button"
+                                    className={cancelEditButtonClass}
+                                    onClick={() => {
+                                      setDraft((p) =>
+                                        p ? { ...p, plan: visit.notes.plan } : p
+                                      );
+                                      setEditing({ ...editing, plan: false });
+                                    }}
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={doneEditButtonClass}
+                                    disabled={saving}
+                                    onClick={() => {
+                                      const filtered = draft?.plan?.filter((x) => x.trim() !== "");
+                                      if (filtered && filtered.length > 0) {
+                                        updateNotes({ plan: filtered });
+                                      }
+                                      setEditing({ ...editing, plan: false });
+                                    }}
+                                  >
+                                    Done
+                                  </button>
+                                </div>
                               </>
                             ) : (
                               <ul className="space-y-2 list-disc list-inside">
@@ -713,6 +807,7 @@ const [saving, setSaving] = useState(false);
                                 ))}
                               </ul>
                             )}
+                </div>
                         
               </div>
             </div>
