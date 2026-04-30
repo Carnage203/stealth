@@ -69,7 +69,6 @@ export default function ViewPatientVisitDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAiBanner, setShowAiBanner] = useState(true);
-  const [regenerating, setRegenerating] = useState(false);
 
   const [search, setSearch] = useState("");
   const [copied, setCopied] = useState(false);
@@ -114,70 +113,6 @@ const doneEditButtonClass =
       toast.error("Failed to copy note.");
     }
   };
-  const updateNotes = async (payload: Partial<SoapNotes>) => {
-  if (!visit || saving) return;
-
-  let cleanPayload: any = {};
-
-  // SUBJECTIVE
-  if (payload.subjective !== undefined && payload.subjective.trim() !== "") {
-    cleanPayload.subjective = payload.subjective;
-  }
-
-  // OBJECTIVE
-  if (payload.objective !== undefined && payload.objective.trim() !== "") {
-    cleanPayload.objective = payload.objective;
-  }
-
-  // ASSESSMENT
-  if (payload.assessment) {
-    const filtered = payload.assessment.filter((x) => x.trim() !== "");
-    if (filtered.length > 0) cleanPayload.assessment = filtered;
-  }
-
-  // PLAN
-  if (payload.plan) {
-    const filtered = payload.plan.filter((x) => x.trim() !== "");
-    if (filtered.length > 0) cleanPayload.plan = filtered;
-  }
-
-  // VITALS (must be complete)
-  if (payload.vitals) {
-    cleanPayload.vitals = {
-      bp: payload.vitals.bp || "Not recorded",
-      pulse: payload.vitals.pulse || "Not recorded",
-      temp: payload.vitals.temp || "Not recorded",
-      resp: payload.vitals.resp || "Not recorded",
-    };
-  }
-
-  try {
-    setSaving(true);
-
-    const res = await fetch(`${SERVER_URL}/visits/${visit.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(cleanPayload),
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      console.error("BACKEND ERROR:", err);
-      throw new Error();
-    }
-
-    setVisit((prev) =>
-      prev ? { ...prev, notes: { ...prev.notes, ...cleanPayload } } : prev
-    );
-
-    toast.success("Saved");
-  } catch {
-    toast.error("Update failed");
-  } finally {
-    setSaving(false);
-  }
-};
 
   useEffect(() => {
     if (!visitId || !patientId) return;
@@ -212,11 +147,6 @@ const doneEditButtonClass =
 
     fetchData();
   }, [visitId, patientId, SERVER_URL]);
-  useEffect(() => {
-    if (visit?.notes) {
-      setDraft(visit.notes);
-    }
-  }, [visit]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -242,46 +172,6 @@ const doneEditButtonClass =
   const isDoctor = (speaker: string[]) => {
     const s = (speaker[0] ?? "").toLowerCase();
     return s === "doctor" || s.includes("doctor") || s === "speaker_0";
-  };
-
-  const getCookie = (name: string) => {
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    if (match) return decodeURIComponent(match[2]);
-    return null;
-  };
-
-  const regenerateSoap = async () => {
-    if (!visit || regenerating) return;
-    setRegenerating(true);
-    try {
-      const csrf = getCookie('csrf_token') || '';
-      const res = await fetch(`${SERVER_URL}/visits/${visit.id}/regenerate-soap`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
-        },
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || 'Regenerate failed');
-      }
-
-      const body = await res.json();
-      if (body.notes) {
-        setVisit((v) => (v ? { ...v, notes: body.notes } : v));
-        toast.success('SOAP regenerated');
-      } else {
-        toast.success('SOAP regenerated');
-      }
-    } catch (err: any) {
-      console.error('Regenerate error', err);
-      toast.error(err?.message || 'Failed to regenerate SOAP');
-    } finally {
-      setRegenerating(false);
-    }
   };
 
   const getSpeakerLabel = (speaker: string[]) =>
@@ -485,12 +375,8 @@ const doneEditButtonClass =
                 needed.
               </div>
               <div className="flex items-center gap-3 text-xs shrink-0 ml-3">
-                <button
-                  className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-                  onClick={regenerateSoap}
-                  disabled={regenerating}
-                >
-                  {regenerating ? 'Regenerating...' : 'Regenerate'}
+                <button className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                  Regenerate
                 </button>
                 <button
                   className="text-gray-400 hover:underline"
@@ -727,12 +613,6 @@ const doneEditButtonClass =
                               </button>
                             </div>
                           </>
-                        ) : (
-                          <ul className="space-y-2 list-disc list-inside">
-                            {visit.notes.assessment.map((item, idx) => (
-                              <li key={idx}>{item}</li>
-                            ))}
-                          </ul>
                         )}
                 </div>
 
@@ -817,4 +697,3 @@ const doneEditButtonClass =
     </div>
   );
 }
-
