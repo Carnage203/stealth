@@ -53,14 +53,10 @@ interface PatientData {
 }
 
 export default function ViewPatientVisitDetails() {
-  // const { id: patientId, visitId } = useParams<{
-  //   id: string;
-  //   visitId: string;
-  // }>();
-  const { patientId, visitId } = {
-    patientId: "69b19bba814eee9e8418ac17",
-    visitId: "69c2e883279e19092ff8b680",
-  }; // Mock params for testing
+  const { id: patientId, visitId } = useParams<{
+    id: string;
+    visitId: string;
+  }>();
   const navigate = useNavigate();
   const SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -80,7 +76,7 @@ export default function ViewPatientVisitDetails() {
 });
 
 const [draft, setDraft] = useState<SoapNotes | null>(null);
-const [saving, setSaving] = useState(false);
+const [saving] = useState(false);
 const editButtonClass =
   "absolute right-5 top-3 inline-flex size-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-100 hover:text-blue-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-blue-400";
 const editTextareaClass =
@@ -90,6 +86,16 @@ const cancelEditButtonClass =
   "h-9 rounded-md border border-gray-200 bg-white px-4 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800";
 const doneEditButtonClass =
   "h-9 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60";
+
+  const updateNotes = (changes: Partial<SoapNotes>) => {
+    setVisit((prev) =>
+      prev ? { ...prev, notes: { ...prev.notes, ...changes } } : prev,
+    );
+    setDraft((prev) =>
+      prev ? { ...prev, ...changes } : prev,
+    );
+    toast.success("Note updated");
+  };
 
   const escapeRegExp = (text: string) =>
     text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -127,6 +133,7 @@ const doneEditButtonClass =
         if (!visitRes.ok) throw new Error("Failed to fetch visit");
         const visitData: VisitData = await visitRes.json();
         setVisit(visitData);
+        setDraft(visitData.notes);
 
         // Use patientId from the visit response — not the URL param (which may be mock data)
         const patientRes = await fetch(
@@ -612,6 +619,25 @@ const doneEditButtonClass =
                               </button>
                             </div>
                           </>
+                        ) : (
+                          <ul className="space-y-2">
+                            {visit.notes.assessment.map((item, idx) => {
+                              const { diagnosis, status } = parseAssessmentStatus(item);
+                              return (
+                                <li key={idx} className="flex items-start gap-2">
+                                  <span className="mt-1.5 size-1.5 rounded-full bg-amber-400 shrink-0" />
+                                  <span className="text-sm text-gray-700 dark:text-slate-300">
+                                    {diagnosis}
+                                    {status && (
+                                      <span className={`ml-2 text-xs font-medium ${getStatusColor(status)}`}>
+                                        {status}
+                                      </span>
+                                    )}
+                                  </span>
+                                </li>
+                              );
+                            })}
+                          </ul>
                         )}
                 </div>
 
@@ -682,7 +708,7 @@ const doneEditButtonClass =
                             ) : (
                               <ul className="space-y-2 list-disc list-inside">
                                 {visit.notes.plan.map((item, idx) => (
-                                  <li key={idx}>{item}</li>
+                                  <li key={idx} className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed">{item}</li>
                                 ))}
                               </ul>
                             )}

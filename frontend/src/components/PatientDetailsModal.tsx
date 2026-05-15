@@ -25,44 +25,14 @@ import toast from "react-hot-toast";
 type Props = {
   open: boolean;
   onClose: () => void;
-  onSuccess?: (patientId: string) => void;
 };
 
-// Mock patient database
-const MOCK_PATIENTS: Record<string, any> = {
-  "MRN-1234": {
-    id: "MRN-1234",
-    firstName: "Michael",
-    lastName: "Ross",
-    age: "34",
-    gender: "Male",
-    phoneNumber: "+15550192233",
-  },
-  "MRN-5678": {
-    id: "MRN-5678",
-    firstName: "Sarah",
-    lastName: "Johnson",
-    age: "28",
-    gender: "Female",
-    phoneNumber: "+15550198877",
-  },
-  "MRN-9999": {
-    id: "MRN-9999",
-    firstName: "John",
-    lastName: "Doe",
-    age: "45",
-    gender: "Male",
-    phoneNumber: "+919876543210",
-  },
-};
 
 export default function PatientDetailsModal({
   open,
   onClose,
-  onSuccess,
 }: Props) {
   const [tab, setTab] = useState<"new" | "existing">("new");
-  const [isLoading, setIsLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
 
   const SERVER_URL = import.meta.env.VITE_API_BASE_URL;
@@ -109,53 +79,34 @@ export default function PatientDetailsModal({
     setSearchError("");
     setFoundPatient(null);
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     try {
-      // Mock API call - search in mock database
-      const patient = MOCK_PATIENTS[patientId.toUpperCase()];
+      const response = await fetch(
+        `${SERVER_URL}/patients/${patientId.trim()}`,
+        { credentials: "include" },
+      );
 
-      if (!patient) {
-        setSearchError("Patient ID not found. Please verify and try again.");
-        toast.error("Patient not found");
+      if (!response.ok) {
+        if (response.status === 404) {
+          setSearchError("Patient not found. Please verify the ID and try again.");
+        } else {
+          throw new Error("Search failed");
+        }
         return;
       }
 
-      setFoundPatient(patient);
-      setSearchError("");
-      toast.success("Patient details found!");
-
-      // const response = await fetch(`${SERVER_URL}/api/patients/${patientId}`, {
-      //   method: "GET",
-      //   credentials: "include",
-      // });
-
-      // const response = true as any;
-
-      // if (!response.ok) {
-      //   if (response.status === 404) {
-      //     setSearchError("Patient ID not found. Please verify and try again.");
-      //   } else {
-      //     throw new Error("Failed to search patient");
-      //   }
-      //   return;
-      // }
-
-      // const data = await response.json();
-      // setFoundPatient(data.patient);
-      // toast.success("Patient details found!");
-      // setSearchError("");
+      const data = await response.json();
+      setFoundPatient(data.patient);
+      toast.success("Patient found!");
     } catch (error: any) {
-      console.error("Error searching patient:", error);
-      toast.error(error.message || "Failed to search patient");
+      if (!searchError) {
+        toast.error(error.message || "Failed to search patient");
+      }
     } finally {
       setSearchLoading(false);
     }
   };
 
-  const handleCreatePatient = async () => {
-    // Validation
+  const handleCreatePatient = () => {
     if (
       !formData.firstName ||
       !formData.lastName ||
@@ -167,68 +118,17 @@ export default function PatientDetailsModal({
       return;
     }
 
-    setIsLoading(true);
+    const patientState = {
+      isNew: true,
+      name: `${formData.firstName} ${formData.lastName}`,
+      age: parseInt(formData.age),
+      gender: formData.gender,
+      phone: formData.phoneNumber,
+    };
 
-    // Simulate Mock API delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    try {
-      // Mock patient creation
-      const mockPatientId = `MRN-${Math.floor(1000 + Math.random() * 9000)}`;
-      const newPatient = {
-        id: mockPatientId,
-        ...formData,
-      };
-
-      console.log("Created patient:", newPatient);
-      toast.success(`Patient created successfully! ID: ${mockPatientId}`);
-
-      resetForm();
-
-      if (onSuccess) {
-        onSuccess(mockPatientId);
-      }
-
-      onClose();
-      navigate(`/doctor/consultations/${mockPatientId}`);
-
-      // const response = await fetch(`${SERVER_URL}/api/patients`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   credentials: "include",
-      //   body: JSON.stringify({
-      //     firstName: formData.firstName,
-      //     lastName: formData.lastName,
-      //     age: parseInt(formData.age),
-      //     gender: formData.gender,
-      //     phoneNumber: formData.phoneNumber,
-      //   }),
-      // });
-
-      // if (!response.ok) {
-      //   const error = await response.json();
-      //   throw new Error(error.message || "Failed to create patient");
-      // }
-
-      // const data = await response.json();
-
-      // toast.success("Patient created successfully");
-
-      // resetForm();
-
-      // if (onSuccess) {
-      //   onSuccess(data.patient.id);
-      // }
-
-      // onClose();
-    } catch (error: any) {
-      console.error("Error creating patient:", error);
-      toast.error(error.message || "Failed to create patient");
-    } finally {
-      setIsLoading(false);
-    }
+    resetForm();
+    onClose();
+    navigate("/doctor/consultations", { state: patientState });
   };
 
   const handleStartRecording = () => {
@@ -240,16 +140,18 @@ export default function PatientDetailsModal({
         return;
       }
 
-      if (onSuccess) {
-        onSuccess(foundPatient.id);
-      }
-
-      toast.success(
-        `Starting recording for ${foundPatient.firstName} ${foundPatient.lastName}`,
-      );
+      const patientState = {
+        isNew: false,
+        patientId: foundPatient.id,
+        name: foundPatient.name,
+        age: foundPatient.age,
+        gender: foundPatient.gender,
+        phone: foundPatient.phone ?? "",
+      };
 
       resetForm();
       onClose();
+      navigate("/doctor/consultations", { state: patientState });
     }
   };
 
@@ -369,10 +271,10 @@ export default function PatientDetailsModal({
           {/* ---------------- EXISTING PATIENT ---------------- */}
           <TabsContent value="existing" className="space-y-4">
             <div className="space-y-2">
-              <Label>Patient ID / MRN</Label>
+              <Label>Patient ID</Label>
               <div className="flex gap-2">
                 <Input
-                  placeholder="MRN-1234"
+                  placeholder="Last 6 characters (e.g. 8df167)"
                   value={patientId}
                   onChange={(e) => setPatientId(e.target.value)}
                 />
@@ -397,16 +299,9 @@ export default function PatientDetailsModal({
                   Confirmation Details
                 </p>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs">First Name</Label>
-                    <Input disabled value={foundPatient.firstName} />
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label className="text-xs">Last Name</Label>
-                    <Input disabled value={foundPatient.lastName} />
-                  </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Full Name</Label>
+                  <Input disabled value={foundPatient.name} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -422,7 +317,7 @@ export default function PatientDetailsModal({
 
                 <div className="space-y-1">
                   <Label className="text-xs">Phone Number</Label>
-                  <Input disabled value={foundPatient.phoneNumber} />
+                  <Input disabled value={foundPatient.phone ?? "—"} />
                 </div>
               </div>
             )}
@@ -435,22 +330,15 @@ export default function PatientDetailsModal({
             variant="outline"
             onClick={handleClose}
             className="hover:cursor-pointer hover:bg-linear-to-b from-blue-50 to-blue-100"
-            disabled={isLoading}
           >
             Cancel
           </Button>
           <Button
             className="hover:cursor-pointer"
             onClick={handleStartRecording}
-            disabled={isLoading || (tab === "existing" && !foundPatient)}
+            disabled={tab === "existing" && !foundPatient}
           >
-            {isLoading ? (
-              "Processing..."
-            ) : (
-              <>
-                <Mic className="size-4" /> Start Recording
-              </>
-            )}
+            <Mic className="size-4" /> Start Recording
           </Button>
         </div>
       </DialogContent>
