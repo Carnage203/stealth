@@ -616,7 +616,7 @@ export default function ViewPatientDetails() {
                         key={visit.id}
                         className="cursor-pointer hover:bg-muted/60"
                         onClick={() =>
-                          navigate(`/doctor/patient/${id}/visit/${visit.id}`)
+                          navigate(`/doctor/patients/${id}/visit/${visit.id}`)
                         }
                       >
                         <TableCell className="font-medium">

@@ -1,3 +1,5 @@
+// Test Version 
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -26,6 +28,9 @@ import RecordingConsultationCard from "@/components/RecordingConsultationCard";
 import ViewPatientDetails from "@/pages/doctor/viewPatientDetails";
 import ViewPatientVisitDetails from "@/pages/doctor/viewPatientVisitDetails";
 import ReviewPatientDetails from "@/pages/doctor/reviewPatientDetails";
+
+
+
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();

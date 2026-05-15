@@ -136,7 +136,7 @@ export const DoctorLayout = () => {
               />
               {!collapsed && (
                 <span
-                  className={`text-sm font-semibold ${isActive(item.path) ? "text-[#137fec]" : "text-[#111418]"}`}
+                  className={`text-sm ${isActive(item.path) ? "text-[#137fec] font-semibold" : "text-[#617589]"}`}
                 >
                   {item.name}
                 </span>
@@ -209,7 +209,7 @@ export const DoctorLayout = () => {
       <main
         className={`transition-all duration-300
           ${collapsed ? "md:ml-18" : "md:ml-72"}
-          h-full overflow-y-auto p-6
+          h-full overflow-y-auto
         `}
       >
         <Outlet />
