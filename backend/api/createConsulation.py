@@ -82,9 +82,8 @@ def create_consultation(
         return {
             "message": "Patient and visit created successfully",
             "patientId": patient_id,
+            "patientMongoId": str(patient_mongo_id),
             "visitId": str(visit_id),
-            "patient": patient_doc if not existing_patient else existing_patient,
-            "visit": visit_doc,
         }
 
     except HTTPException:

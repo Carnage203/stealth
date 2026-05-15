@@ -3,6 +3,7 @@ from api.auth.signup import router as signup_router
 from api.auth.activate import router as activate_router
 from api.profile.completeProfile import router as complete_profile_router
 from api.profile.updateProfile import router as update_profile_router
+from api.profile.getProfile import router as get_profile_router
 from api.auth.refreshToken import router as refresh_token_router
 from api.auth.login import router as login_router
 from api.auth.me import router as me_router
@@ -17,6 +18,7 @@ from api.session.getAllSessions import router as get_all_sessions_router
 from api.session.logoutDeviceBySessionId import router as logout_device_by_session_id_router
 from api.session.logoutAllDeviceBYUserId import router as logout_all_device_router
 from api.auth.resetToken import router as reset_token_router
+from api.dashboard.getDashboardStats import router as dashboard_stats_router
 
 apiRouter = APIRouter()
 
@@ -69,6 +71,11 @@ apiRouter.include_router(
     tags=['Auth']
 )
 apiRouter.include_router(
+    get_profile_router,
+    prefix='/auth',
+    tags=['Auth']
+)
+apiRouter.include_router(
     me_router,
     prefix='/auth',
     tags=['Auth']
@@ -103,6 +110,13 @@ apiRouter.include_router(
     tags=['Visits']
 )
 
+
+# Dashboard Api Routes
+apiRouter.include_router(
+    dashboard_stats_router,
+    prefix='/dashboard',
+    tags=['Dashboard']
+)
 
 # Session Api Routes
 apiRouter.include_router(
