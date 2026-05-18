@@ -78,6 +78,13 @@ class TranscriptionSegment(BaseModel):
 class VisitUpdate(BaseModel):
     transcript: Dict[str, str]
 
+class VisitNotesUpdate(BaseModel):
+    subjective: Optional[str] = None
+    vitals: Optional[SoapVitals] = None
+    objective: Optional[str] = None
+    assessment: Optional[List[str]] = None
+    plan: Optional[List[str]] = None
+
 class VisitListItem(BaseModel):
     id: str
     date: datetime

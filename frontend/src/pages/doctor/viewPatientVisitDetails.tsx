@@ -76,7 +76,7 @@ export default function ViewPatientVisitDetails() {
 });
 
 const [draft, setDraft] = useState<SoapNotes | null>(null);
-const [saving] = useState(false);
+const [saving, setSaving] = useState(false);
 const editButtonClass =
   "absolute right-5 top-3 inline-flex size-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-100 hover:text-blue-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-blue-400";
 const editTextareaClass =
@@ -87,14 +87,43 @@ const cancelEditButtonClass =
 const doneEditButtonClass =
   "h-9 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60";
 
-  const updateNotes = (changes: Partial<SoapNotes>) => {
+  const updateNotes = async (changes: Partial<SoapNotes>) => {
+    if (!visit || saving) return;
+
+    const previousNotes = visit.notes;
+
     setVisit((prev) =>
       prev ? { ...prev, notes: { ...prev.notes, ...changes } } : prev,
     );
     setDraft((prev) =>
       prev ? { ...prev, ...changes } : prev,
     );
-    toast.success("Note updated");
+
+    try {
+      setSaving(true);
+      const response = await fetch(`${SERVER_URL}/visits/${visit.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(changes),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save note");
+      }
+
+      const updatedVisit: VisitData = await response.json();
+      setVisit(updatedVisit);
+      setDraft(updatedVisit.notes);
+      toast.success("Note updated");
+    } catch (error) {
+      console.error("Failed to update note:", error);
+      setVisit((prev) => (prev ? { ...prev, notes: previousNotes } : prev));
+      setDraft(previousNotes);
+      toast.error("Failed to save note");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const escapeRegExp = (text: string) =>
