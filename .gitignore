@@ -2,3 +2,4 @@
 .env
 __pycache__/
 *.pyc
+icd9to10dictionary.txt

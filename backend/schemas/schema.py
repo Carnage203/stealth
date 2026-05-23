@@ -112,3 +112,10 @@ class PatientListItem(BaseModel):
 
     class Config:
         orm_mode = True
+
+class ICD10Request(BaseModel):
+    soap_note: str
+
+class ICD10Response(BaseModel):
+    status: str
+    icd10_notes: str
