@@ -113,9 +113,17 @@ class PatientListItem(BaseModel):
     class Config:
         orm_mode = True
 
-class ICD10Request(BaseModel):
-    soap_note: str
-
+class MatchConfidence(str, Enum):
+    high   = "high"
+    medium = "medium"
+    low    = "low"
+ 
+class ICDSuggestion(BaseModel):
+    icd_code:         str = Field(..., description="ICD-10 code (e.g. 'J44.1')")
+    disease_name:     str = Field(..., description="Full description of the diagnosis")
+    reason:           str = Field(..., description="Clinical justification from the SOAP note")
+    match_confidence: MatchConfidence = Field(..., description="Confidence level: high | medium | low")
+ 
 class ICD10Response(BaseModel):
-    status: str
-    icd10_notes: str
+    visit_id:        str                = Field(...)
+    icd_suggestions: List[ICDSuggestion] = Field(...)

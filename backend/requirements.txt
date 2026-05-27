@@ -9,3 +9,8 @@ elevenlabs
 cloudinary
 google-genai
 user-agents
+fpdf
+pageindex
+pandas
+pymongo[srv]
+sentence_transformers

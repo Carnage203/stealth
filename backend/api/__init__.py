@@ -19,6 +19,7 @@ from api.session.logoutDeviceBySessionId import router as logout_device_by_sessi
 from api.session.logoutAllDeviceBYUserId import router as logout_all_device_router
 from api.auth.resetToken import router as reset_token_router
 from api.dashboard.getDashboardStats import router as dashboard_stats_router
+from api.billing.extractIcdCodes import router as extract_icd_codes_router
 
 apiRouter = APIRouter()
 
@@ -34,7 +35,7 @@ apiRouter.include_router(
     tags=['Cloudinary']
 )
 
-# Auth Api Routes 
+# Auth Api Routes
 apiRouter.include_router(
     signup_router,
     prefix='/auth',
@@ -86,7 +87,6 @@ apiRouter.include_router(
     tags=['Auth']
 )
 
-
 # Patients Api Routes
 apiRouter.include_router(
     patient_detail_router,
@@ -99,6 +99,7 @@ apiRouter.include_router(
     tags=['Patients']
 )
 
+# Visits Api Routes
 apiRouter.include_router(
     get_visits_by_visit_id_router,
     prefix='/visits',
@@ -110,6 +111,12 @@ apiRouter.include_router(
     tags=['Visits']
 )
 
+# Billing Api Routes
+apiRouter.include_router(
+    extract_icd_codes_router,
+    prefix='/billing',
+    tags=['Billing']
+)
 
 # Dashboard Api Routes
 apiRouter.include_router(

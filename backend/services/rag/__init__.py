@@ -1,9 +1,22 @@
-from services.rag.client import get_pageindex_client
-from services.rag.data_setup import run_one_time_indexing
-from services.rag.engine import rag_engine
+from .pipeline import (
+    extract_symptoms,
+    retrieve_candidates,
+    judge_candidates,
+    generate_icd10_report
+)
+
+def run_rag_pipeline(soap_note: str) -> list[dict]:
+    symptoms   = extract_symptoms(soap_note)
+    candidates = retrieve_candidates(symptoms, top_k=3)
+    filtered   = judge_candidates(soap_note, candidates)
+    result     = generate_icd10_report(soap_note, filtered)
+    return result
+
 
 __all__ = [
-    "get_pageindex_client",
-    "run_one_time_indexing",
-    "rag_engine"
+    "run_rag_pipeline",
+    "extract_symptoms",
+    "retrieve_candidates",
+    "judge_candidates",
+    "generate_icd10_report"
 ]
